@@ -13,16 +13,16 @@ const STORES = [
 
 const STORE_REFERENCE = [
   { storeName: "Gifi Villefranche", postalCode: "69400" },
-  //{ storeName: "Gifi Neuville", postalCode: "69250" },
-  //{ storeName: "Gifi Limonest", postalCode: "69760" },
-  //{ storeName: "Gifi L'Arbresle", postalCode: "69210" },
-  //{ storeName: "Gifi Beynost", postalCode: "01700" },
+  { storeName: "Gifi Neuville", postalCode: "69250" },
+  { storeName: "Gifi Limonest", postalCode: "69760" },
+  { storeName: "Gifi L'Arbresle", postalCode: "69210" },
+  { storeName: "Gifi Beynost", postalCode: "01700" },
   { storeName: "Gifi Villeurbanne", postalCode: "69100" },
-  //{ storeName: "Gifi Pierre Benite", postalCode: "69310" },
-  //{ storeName: "Gifi St Priest", postalCode: "69800" },
-  //{ storeName: "Gifi Givors", postalCode: "69700" },
-  //{ storeName: "Gifi Vaulx En Velin", postalCode: "69120" },
-  //{ storeName: "Gifi Meyzieu", postalCode: "69330" }
+  { storeName: "Gifi Pierre Benite", postalCode: "69310" },
+  { storeName: "Gifi St Priest", postalCode: "69800" },
+  { storeName: "Gifi Givors", postalCode: "69700" },
+  { storeName: "Gifi Vaulx En Velin", postalCode: "69120" },
+  { storeName: "Gifi Meyzieu", postalCode: "69330" }
 ];
 
 function normalizeText(value) {
