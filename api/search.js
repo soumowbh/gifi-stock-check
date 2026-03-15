@@ -1,14 +1,15 @@
 const STORES = [
   { city: "Villefranche-sur-Saone", postalCode: "69400" },
-  //{ city: "Neuville-sur-Saone", postalCode: "69250" },
-  //{ city: "Limonest", postalCode: "69760" },
-  //{ city: "L'Arbresle", postalCode: "69210" },
-  //{ city: "Beynost", postalCode: "01700" },
   { city: "Villeurbanne", postalCode: "69100" },
-  //{ city: "Saint-Genis-Laval", postalCode: "69230" },
-  //{ city: "Saint-Priest", postalCode: "69800" },
-  //{ city: "Givors", postalCode: "69700" },
-  //{ city: "Vaulx-en-Velin", postalCode: "69120" }
+
+  // { city: "Neuville-sur-Saone", postalCode: "69250" },
+  // { city: "Limonest", postalCode: "69760" },
+  // { city: "L'Arbresle", postalCode: "69210" },
+  // { city: "Beynost", postalCode: "01700" },
+  // { city: "Saint-Genis-Laval", postalCode: "69230" },
+  // { city: "Saint-Priest", postalCode: "69800" },
+  // { city: "Givors", postalCode: "69700" },
+  // { city: "Vaulx-en-Velin", postalCode: "69120" }
 ];
 
 const STORE_REFERENCE = [
@@ -43,7 +44,11 @@ function resolveStorePostalCode(storeName) {
 
   for (const ref of STORE_REFERENCE) {
     const refName = normalizeText(ref.storeName);
-    if (normalized === refName || normalized.includes(refName) || refName.includes(normalized)) {
+    if (
+      normalized === refName ||
+      normalized.includes(refName) ||
+      refName.includes(normalized)
+    ) {
       return ref.postalCode;
     }
   }
@@ -81,7 +86,7 @@ async function fetchGifiStores(postalCode, productCode, quantity, safetyStock) {
     const response = await fetch(url, {
       method: "GET",
       headers: {
-        "Accept": "application/json, text/plain, */*",
+        Accept: "application/json, text/plain, */*",
         "User-Agent": "Mozilla/5.0"
       },
       signal: controller.signal
@@ -143,9 +148,19 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Aucun code article fourni" });
     }
 
+    // Sécurise la liste pour n'appeler que 69100 et 69400, même si STORES change plus tard
+    const allowedPostalCodes = new Set(["69100", "69400"]);
+
+    // Déduplication des codes postaux pour éviter les appels inutiles
+    const filteredStores = STORES.filter(
+      (store, index, array) =>
+        allowedPostalCodes.has(store.postalCode) &&
+        index === array.findIndex((s) => s.postalCode === store.postalCode)
+    );
+
     const tasks = [];
     for (const productCode of productCodes) {
-      for (const storeSearch of STORES) {
+      for (const storeSearch of filteredStores) {
         tasks.push({
           productCode,
           postalCode: storeSearch.postalCode
@@ -153,7 +168,7 @@ export default async function handler(req, res) {
       }
     }
 
-    const rawResponses = await mapWithConcurrency(tasks, 5, async (task) => {
+    const rawResponses = await mapWithConcurrency(tasks, 2, async (task) => {
       const data = await fetchGifiStores(
         task.postalCode,
         task.productCode,
