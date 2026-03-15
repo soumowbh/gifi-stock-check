@@ -60,9 +60,9 @@ function toProductId(productCode) {
 }
 
 function getBusinessStatus(stock, safetyStock) {
-  if (stock <= 0) return "INDISPO";
-  if (stock < Math.ceil(safetyStock)) return "STOCK LIMITE";
-  return "DISPO";
+  if (stock <= 0) return "Indisponible";
+  if (stock < Math.ceil(safetyStock)) return "Stock limité";
+  return "Disponible";
 }
 
 async function fetchGifiStores(postalCode, productCode, quantity, safetyStock) {
