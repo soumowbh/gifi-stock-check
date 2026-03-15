@@ -38,7 +38,7 @@ function renderResults(rows) {
       <td>${escapeHtml(row.magasin)}</td>
       <td>${escapeHtml(row.codeArticle)}</td>
       <td>${escapeHtml(row.stocks)}</td>
-      <td class="${getStatusClass(row.status)}">${escapeHtml(row.status)}</td>
+      <td><span class="${getStatusClass(item.status)}">${item.status}</span></td>
     </tr>
   `).join("");
 }
