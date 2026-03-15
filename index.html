@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stock GiFi</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main class="container">
+    <h1>Recherche stock GiFi</h1>
+
+    <section class="card">
+      <div class="form-grid">
+        <div>
+          <label for="productCodes">Codes article</label>
+          <textarea id="productCodes" rows="6" placeholder="643421&#10;643411"></textarea>
+        </div>
+
+        <div>
+          <label for="quantity">Quantité</label>
+          <input id="quantity" type="number" min="1" step="1" value="1" />
+
+          <label for="safetyStock" class="mt">Safety stock</label>
+          <input id="safetyStock" type="number" min="0" step="1" value="5" />
+
+          <button id="searchBtn" class="mt-lg">Rechercher</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div id="statusText">Prêt.</div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>CP</th>
+              <th>Magasin</th>
+              <th>Code Article</th>
+              <th>Stocks</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody">
+            <tr>
+              <td colspan="5" class="empty">Aucun résultat.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>
