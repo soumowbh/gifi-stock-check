@@ -14,7 +14,11 @@
       <div class="form-grid">
         <div>
           <label for="productCodes">Codes article</label>
-          <textarea id="productCodes" rows="6" placeholder="643421&#10;643411"></textarea>
+          <textarea
+            id="productCodes"
+            rows="6"
+            placeholder="643421&#10;643411"
+          ></textarea>
         </div>
 
         <div>
@@ -24,13 +28,13 @@
           <label for="safetyStock" class="mt">Safety stock</label>
           <input id="safetyStock" type="number" min="0" step="1" value="5" />
 
-          <button id="searchBtn" class="mt-lg">Rechercher</button>
+          <button id="searchBtn" type="button" class="mt-lg">Rechercher</button>
         </div>
       </div>
     </section>
 
     <section class="card">
-      <div id="statusText">Prêt.</div>
+      <div id="statusText" aria-live="polite">Prêt.</div>
 
       <div class="table-wrap">
         <table>
@@ -47,6 +51,32 @@
             <tr>
               <td colspan="5" class="empty">Aucun résultat.</td>
             </tr>
+
+            <!-- Exemple de rendu attendu :
+            <tr>
+              <td>69100</td>
+              <td>Gifi Villeurbanne</td>
+              <td>643421</td>
+              <td>12</td>
+              <td><span class="status-dispo">Disponible</span></td>
+            </tr>
+
+            <tr>
+              <td>69400</td>
+              <td>Gifi Villefranche</td>
+              <td>643421</td>
+              <td>2</td>
+              <td><span class="status-limite">Stock limité</span></td>
+            </tr>
+
+            <tr>
+              <td>69100</td>
+              <td>Gifi Villeurbanne</td>
+              <td>123456</td>
+              <td>0</td>
+              <td><span class="status-indispo">Indisponible</span></td>
+            </tr>
+            -->
           </tbody>
         </table>
       </div>

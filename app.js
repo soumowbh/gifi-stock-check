@@ -8,8 +8,8 @@ const statusText = document.getElementById("statusText");
 const API_BASE = "https://gifi-stock-check.vercel.app";
 
 function getStatusClass(status) {
-  if (status === "DISPO") return "status-dispo";
-  if (status === "STOCK LIMITE") return "status-limite";
+  if (status === "Disponible") return "status-dispo";
+  if (status === "Stock limité") return "status-limite";
   return "status-indispo";
 }
 
