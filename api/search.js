@@ -66,27 +66,59 @@ function getBusinessStatus(stock, safetyStock) {
 }
 
 async function fetchGifiStores(postalCode, productCode, quantity, safetyStock) {
-  const productId = toProductId(productCode);
-  const productsParam = encodeURIComponent(`${productId}:${quantity}`);
-  const safetyStockFormatted = Number(safetyStock).toFixed(1);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
 
-  const url =
-    `https://www.gifi.fr/on/demandware.store/Sites-GIFI_FR-Site/fr_FR/Stores-FindStores` +
-    `?products=${productsParam}&safetyStock=${safetyStockFormatted}&postalCode=${encodeURIComponent(postalCode)}`;
+  try {
+    const productId = toProductId(productCode);
+    const productsParam = encodeURIComponent(`${productId}:${quantity}`);
+    const safetyStockFormatted = Number(safetyStock).toFixed(1);
 
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      "Accept": "application/json, text/plain, */*",
-      "User-Agent": "Mozilla/5.0"
+    const url =
+      `https://www.gifi.fr/on/demandware.store/Sites-GIFI_FR-Site/fr_FR/Stores-FindStores` +
+      `?products=${productsParam}&safetyStock=${safetyStockFormatted}&postalCode=${encodeURIComponent(postalCode)}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Accept": "application/json, text/plain, */*",
+        "User-Agent": "Mozilla/5.0"
+      },
+      signal: controller.signal
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erreur GiFi HTTP ${response.status}`);
     }
-  });
 
-  if (!response.ok) {
-    throw new Error(`Erreur GiFi HTTP ${response.status}`);
+    return await response.json();
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function mapWithConcurrency(items, limit, asyncMapper) {
+  const results = [];
+  let index = 0;
+
+  async function worker() {
+    while (index < items.length) {
+      const currentIndex = index++;
+      try {
+        results[currentIndex] = await asyncMapper(items[currentIndex], currentIndex);
+      } catch (error) {
+        results[currentIndex] = { error: error.message };
+      }
+    }
   }
 
-  return response.json();
+  const workers = Array.from(
+    { length: Math.min(limit, items.length) },
+    () => worker()
+  );
+
+  await Promise.all(workers);
+  return results;
 }
 
 export default async function handler(req, res) {
@@ -111,46 +143,59 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Aucun code article fourni" });
     }
 
+    const tasks = [];
+    for (const productCode of productCodes) {
+      for (const storeSearch of STORES) {
+        tasks.push({
+          productCode,
+          postalCode: storeSearch.postalCode
+        });
+      }
+    }
+
+    const rawResponses = await mapWithConcurrency(tasks, 5, async (task) => {
+      const data = await fetchGifiStores(
+        task.postalCode,
+        task.productCode,
+        quantity,
+        safetyStock
+      );
+
+      return {
+        task,
+        data
+      };
+    });
+
     const allResults = [];
     const seen = new Set();
 
-    for (const productCode of productCodes) {
-      for (const storeSearch of STORES) {
-        let data;
+    for (const item of rawResponses) {
+      if (!item || item.error || !item.data) {
+        continue;
+      }
 
-        try {
-          data = await fetchGifiStores(
-            storeSearch.postalCode,
-            productCode,
-            quantity,
-            safetyStock
-          );
-        } catch {
+      const stores = Array.isArray(item.data?.stores) ? item.data.stores : [];
+
+      for (const store of stores) {
+        const storeId = store?.id || "";
+        const uniqueKey = `${item.task.productCode}|${storeId}`;
+
+        if (seen.has(uniqueKey)) {
           continue;
         }
+        seen.add(uniqueKey);
 
-        const stores = Array.isArray(data?.stores) ? data.stores : [];
+        const stockInfo = store?.productStockInfo || {};
+        const stock = Number.isFinite(Number(stockInfo.stock)) ? Number(stockInfo.stock) : 0;
 
-        for (const store of stores) {
-          const storeId = store?.id || "";
-          const uniqueKey = `${productCode}|${storeId}`;
-
-          if (seen.has(uniqueKey)) {
-            continue;
-          }
-          seen.add(uniqueKey);
-
-          const stockInfo = store?.productStockInfo || {};
-          const stock = Number.isFinite(Number(stockInfo.stock)) ? Number(stockInfo.stock) : 0;
-
-          allResults.push({
-            cp: resolveStorePostalCode(store?.name || ""),
-            magasin: store?.name || "",
-            codeArticle: productCode,
-            stocks: stock,
-            status: getBusinessStatus(stock, safetyStock)
-          });
-        }
+        allResults.push({
+          cp: resolveStorePostalCode(store?.name || ""),
+          magasin: store?.name || "",
+          codeArticle: item.task.productCode,
+          stocks: stock,
+          status: getBusinessStatus(stock, safetyStock)
+        });
       }
     }
 
