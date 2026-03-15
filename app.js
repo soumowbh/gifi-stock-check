@@ -32,13 +32,17 @@ function renderResults(rows) {
     return;
   }
 
-  resultsBody.innerHTML = rows.map(row => `
+  resultsBody.innerHTML = rows.map((row) => `
     <tr>
       <td>${escapeHtml(row.cp)}</td>
       <td>${escapeHtml(row.magasin)}</td>
       <td>${escapeHtml(row.codeArticle)}</td>
       <td>${escapeHtml(row.stocks)}</td>
-      <td><span class="${getStatusClass(item.status)}">${item.status}</span></td>
+      <td>
+        <span class="${getStatusClass(row.status)}">
+          ${escapeHtml(row.status)}
+        </span>
+      </td>
     </tr>
   `).join("");
 }
@@ -46,7 +50,7 @@ function renderResults(rows) {
 searchBtn.addEventListener("click", async () => {
   const productCodes = productCodesInput.value
     .split(/\r?\n|,|;/)
-    .map(x => x.trim())
+    .map((x) => x.trim())
     .filter(Boolean);
 
   const quantity = Number(quantityInput.value || 1);
