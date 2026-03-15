@@ -5,7 +5,7 @@ const safetyStockInput = document.getElementById("safetyStock");
 const resultsBody = document.getElementById("resultsBody");
 const statusText = document.getElementById("statusText");
 
-const API_BASE = "https://VERCEL_API_URL";
+const API_BASE = "https://gifi-stock-check.vercel.app";
 
 function getStatusClass(status) {
   if (status === "DISPO") return "status-dispo";
