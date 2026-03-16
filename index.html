@@ -7,34 +7,55 @@
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <main class="container">
+  <div class="container">
     <h1>Recherche stock GiFi</h1>
 
-    <section class="card">
+    <div class="card">
       <div class="form-grid">
         <div>
-          <label for="productCodes">Codes article</label>
-          <textarea
-            id="productCodes"
-            rows="6"
-            placeholder="643421&#10;643411"
-          ></textarea>
+          <label for="productCode">Code article</label>
+          <input
+            id="productCode"
+            type="text"
+            placeholder="Ex: 643421"
+            inputmode="numeric"
+          />
         </div>
 
         <div>
           <label for="quantity">Quantité</label>
-          <input id="quantity" type="number" min="1" step="1" value="1" />
-
-          <label for="safetyStock" class="mt">Safety stock</label>
-          <input id="safetyStock" type="number" min="0" step="1" value="5" />
-
-          <button id="searchBtn" type="button" class="mt-lg">Rechercher</button>
+          <input id="quantity" type="number" min="1" value="1" />
         </div>
       </div>
-    </section>
 
-    <section class="card">
-      <div id="statusText" aria-live="polite">Prêt.</div>
+      <div class="form-grid mt">
+        <div>
+          <label for="safetyStock">Safety stock</label>
+          <input id="safetyStock" type="number" min="0" value="5" />
+        </div>
+
+        <div class="align-end">
+          <button id="searchBtn">Rechercher</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="productCard" class="card product-card hidden">
+      <div class="product-layout">
+        <div class="product-visual">
+          <img id="productImage" src="" alt="" />
+        </div>
+
+        <div class="product-meta">
+          <div id="productTitle" class="product-title"></div>
+          <div id="productRef" class="product-ref"></div>
+          <div id="productPrice" class="product-price"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div id="statusText">Prêt.</div>
 
       <div class="table-wrap">
         <table>
@@ -43,47 +64,19 @@
               <th>CP</th>
               <th>Magasin</th>
               <th>Code Article</th>
-              <th>Image</th>
-              <th>Libellé</th>
               <th>Stocks</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody id="resultsBody">
             <tr>
-              <td colspan="7" class="empty">Aucun résultat.</td>
+              <td colspan="5" class="empty">Aucun résultat.</td>
             </tr>
-
-            <!-- Exemple de rendu attendu :
-            <tr>
-              <td>69100</td>
-              <td>Gifi Villeurbanne</td>
-              <td>643421</td>
-              <td>12</td>
-              <td><span class="status-dispo">Disponible</span></td>
-            </tr>
-
-            <tr>
-              <td>69400</td>
-              <td>Gifi Villefranche</td>
-              <td>643421</td>
-              <td>2</td>
-              <td><span class="status-limite">Stock limité</span></td>
-            </tr>
-
-            <tr>
-              <td>69100</td>
-              <td>Gifi Villeurbanne</td>
-              <td>123456</td>
-              <td>0</td>
-              <td><span class="status-indispo">Indisponible</span></td>
-            </tr>
-            -->
           </tbody>
         </table>
       </div>
-    </section>
-  </main>
+    </div>
+  </div>
 
   <script src="./app.js"></script>
 </body>

@@ -1,9 +1,15 @@
 const searchBtn = document.getElementById("searchBtn");
-const productCodesInput = document.getElementById("productCodes");
+const productCodeInput = document.getElementById("productCode");
 const quantityInput = document.getElementById("quantity");
 const safetyStockInput = document.getElementById("safetyStock");
 const resultsBody = document.getElementById("resultsBody");
 const statusText = document.getElementById("statusText");
+
+const productCard = document.getElementById("productCard");
+const productImage = document.getElementById("productImage");
+const productTitle = document.getElementById("productTitle");
+const productRef = document.getElementById("productRef");
+const productPrice = document.getElementById("productPrice");
 
 const API_BASE = "https://gifi-stock-check.vercel.app";
 
@@ -22,31 +28,49 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
+function clearProductCard() {
+  productCard.classList.add("hidden");
+  productImage.src = "";
+  productImage.alt = "";
+  productTitle.textContent = "";
+  productRef.textContent = "";
+  productPrice.textContent = "";
+}
+
+function renderProduct(product) {
+  if (!product) {
+    clearProductCard();
+    return;
+  }
+
+  productImage.src = product.imageUrl || "";
+  productImage.alt = product.libelle || product.codeArticle || "Produit";
+  productTitle.textContent = product.libelle || "";
+  productRef.textContent = product.codeArticle
+    ? `Réf. ${product.codeArticle}`
+    : "";
+  productPrice.textContent = product.prix || "";
+
+  productCard.classList.remove("hidden");
+}
+
 function renderResults(rows) {
   if (!rows || rows.length === 0) {
     resultsBody.innerHTML = `
       <tr>
-        <td colspan="7" class="empty">Aucun résultat.</td>
+        <td colspan="5" class="empty">Aucun résultat.</td>
       </tr>
     `;
     return;
   }
 
   resultsBody.innerHTML = rows
-    .map((row) => {
-      const imageCell = row.imageUrl
-        ? `<img class="product-thumb" src="${escapeHtml(row.imageUrl)}" alt="${escapeHtml(row.libelle || row.codeArticle)}" loading="lazy">`
-        : `<div class="product-thumb product-thumb--empty">—</div>`;
-
-      return `
+    .map(
+      (row) => `
         <tr>
           <td>${escapeHtml(row.cp)}</td>
           <td>${escapeHtml(row.magasin)}</td>
           <td>${escapeHtml(row.codeArticle)}</td>
-          <td class="product-cell">
-            ${imageCell}
-          </td>
-          <td>${escapeHtml(row.libelle)}</td>
           <td>${escapeHtml(row.stocks)}</td>
           <td>
             <span class="${getStatusClass(row.status)}">
@@ -54,27 +78,25 @@ function renderResults(rows) {
             </span>
           </td>
         </tr>
-      `;
-    })
+      `
+    )
     .join("");
 }
 
 searchBtn.addEventListener("click", async () => {
-  const productCodes = productCodesInput.value
-    .split(/\r?\n|,|;/)
-    .map((x) => x.trim())
-    .filter(Boolean);
-
+  const productCode = productCodeInput.value.trim();
   const quantity = Number(quantityInput.value || 1);
   const safetyStock = Number(safetyStockInput.value || 5);
 
-  if (productCodes.length === 0) {
-    statusText.textContent = "Saisis au moins un code article.";
+  if (!productCode) {
+    statusText.textContent = "Saisis un code article.";
+    clearProductCard();
     renderResults([]);
     return;
   }
 
   statusText.textContent = "Recherche en cours...";
+  clearProductCard();
   renderResults([]);
 
   try {
@@ -83,7 +105,11 @@ searchBtn.addEventListener("click", async () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ productCodes, quantity, safetyStock }),
+      body: JSON.stringify({
+        productCode,
+        quantity,
+        safetyStock,
+      }),
     });
 
     const data = await response.json();
@@ -92,10 +118,12 @@ searchBtn.addEventListener("click", async () => {
       throw new Error(data.error || `HTTP ${response.status}`);
     }
 
+    renderProduct(data.product);
     renderResults(data.results || []);
     statusText.textContent = `${data.results?.length || 0} ligne(s) affichée(s).`;
   } catch (error) {
-    statusText.textContent = `Erreur : ${error.message}`;
+    clearProductCard();
     renderResults([]);
+    statusText.textContent = `Erreur : ${error.message}`;
   }
 });
