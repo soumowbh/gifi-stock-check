@@ -19,32 +19,44 @@ function escapeHtml(value) {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    .replaceAll("'", "&#39;");
 }
 
 function renderResults(rows) {
   if (!rows || rows.length === 0) {
     resultsBody.innerHTML = `
       <tr>
-        <td colspan="5" class="empty">Aucun résultat.</td>
+        <td colspan="7" class="empty">Aucun résultat.</td>
       </tr>
     `;
     return;
   }
 
-  resultsBody.innerHTML = rows.map((row) => `
-    <tr>
-      <td>${escapeHtml(row.cp)}</td>
-      <td>${escapeHtml(row.magasin)}</td>
-      <td>${escapeHtml(row.codeArticle)}</td>
-      <td>${escapeHtml(row.stocks)}</td>
-      <td>
-        <span class="${getStatusClass(row.status)}">
-          ${escapeHtml(row.status)}
-        </span>
-      </td>
-    </tr>
-  `).join("");
+  resultsBody.innerHTML = rows
+    .map((row) => {
+      const imageCell = row.imageUrl
+        ? `<img class="product-thumb" src="${escapeHtml(row.imageUrl)}" alt="${escapeHtml(row.libelle || row.codeArticle)}" loading="lazy">`
+        : `<div class="product-thumb product-thumb--empty">—</div>`;
+
+      return `
+        <tr>
+          <td>${escapeHtml(row.cp)}</td>
+          <td>${escapeHtml(row.magasin)}</td>
+          <td>${escapeHtml(row.codeArticle)}</td>
+          <td class="product-cell">
+            ${imageCell}
+          </td>
+          <td>${escapeHtml(row.libelle)}</td>
+          <td>${escapeHtml(row.stocks)}</td>
+          <td>
+            <span class="${getStatusClass(row.status)}">
+              ${escapeHtml(row.status)}
+            </span>
+          </td>
+        </tr>
+      `;
+    })
+    .join("");
 }
 
 searchBtn.addEventListener("click", async () => {
@@ -69,13 +81,9 @@ searchBtn.addEventListener("click", async () => {
     const response = await fetch(`${API_BASE}/api/search`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        productCodes,
-        quantity,
-        safetyStock
-      })
+      body: JSON.stringify({ productCodes, quantity, safetyStock }),
     });
 
     const data = await response.json();

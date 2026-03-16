@@ -1,15 +1,6 @@
 const STORES = [
   { city: "Villefranche-sur-Saone", postalCode: "69400" },
   { city: "Villeurbanne", postalCode: "69100" },
-
-  // { city: "Neuville-sur-Saone", postalCode: "69250" },
-  // { city: "Limonest", postalCode: "69760" },
-  // { city: "L'Arbresle", postalCode: "69210" },
-  // { city: "Beynost", postalCode: "01700" },
-  // { city: "Saint-Genis-Laval", postalCode: "69230" },
-  // { city: "Saint-Priest", postalCode: "69800" },
-  // { city: "Givors", postalCode: "69700" },
-  // { city: "Vaulx-en-Velin", postalCode: "69120" }
 ];
 
 const STORE_REFERENCE = [
@@ -23,8 +14,21 @@ const STORE_REFERENCE = [
   { storeName: "Gifi St Priest", postalCode: "69800" },
   { storeName: "Gifi Givors", postalCode: "69700" },
   { storeName: "Gifi Vaulx En Velin", postalCode: "69120" },
-  { storeName: "Gifi Meyzieu", postalCode: "69330" }
+  { storeName: "Gifi Meyzieu", postalCode: "69330" },
 ];
+
+/**
+ * Cache produit simple.
+ * Tu peux l'alimenter au fur et à mesure.
+ * Clé = code article sur 6 chiffres.
+ */
+const PRODUCT_CATALOG = {
+  "643421": {
+    libelle: "Assiette creuse forme organique céramique blanche Ø20cm",
+    imageUrl:
+      "https://www.gifi.fr/dw/image/v2/BJSK_PRD/on/demandware.static/-/Sites-master_GIFI/default/dwbca59aab/6/4/643421_F.jpg?sh=300&sm=fit&sw=300",
+  },
+};
 
 function normalizeText(value) {
   return String(value || "")
@@ -70,6 +74,16 @@ function getBusinessStatus(stock, safetyStock) {
   return "Disponible";
 }
 
+function getProductMeta(productCode) {
+  const clean = String(productCode).replace(/\D/g, "");
+  const cached = PRODUCT_CATALOG[clean];
+
+  return {
+    libelle: cached?.libelle || "",
+    imageUrl: cached?.imageUrl || "",
+  };
+}
+
 async function fetchGifiStores(postalCode, productCode, quantity, safetyStock) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10000);
@@ -87,9 +101,9 @@ async function fetchGifiStores(postalCode, productCode, quantity, safetyStock) {
       method: "GET",
       headers: {
         Accept: "application/json, text/plain, */*",
-        "User-Agent": "Mozilla/5.0"
+        "User-Agent": "Mozilla/5.0",
       },
-      signal: controller.signal
+      signal: controller.signal,
     });
 
     if (!response.ok) {
@@ -140,7 +154,9 @@ export default async function handler(req, res) {
   }
 
   try {
-    const productCodes = Array.isArray(req.body?.productCodes) ? req.body.productCodes : [];
+    const productCodes = Array.isArray(req.body?.productCodes)
+      ? req.body.productCodes
+      : [];
     const quantity = Number(req.body?.quantity ?? 1);
     const safetyStock = Number(req.body?.safetyStock ?? 5);
 
@@ -148,10 +164,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Aucun code article fourni" });
     }
 
-    // Sécurise la liste pour n'appeler que 69100 et 69400, même si STORES change plus tard
     const allowedPostalCodes = new Set(["69100", "69400"]);
-
-    // Déduplication des codes postaux pour éviter les appels inutiles
     const filteredStores = STORES.filter(
       (store, index, array) =>
         allowedPostalCodes.has(store.postalCode) &&
@@ -161,10 +174,7 @@ export default async function handler(req, res) {
     const tasks = [];
     for (const productCode of productCodes) {
       for (const storeSearch of filteredStores) {
-        tasks.push({
-          productCode,
-          postalCode: storeSearch.postalCode
-        });
+        tasks.push({ productCode, postalCode: storeSearch.postalCode });
       }
     }
 
@@ -175,11 +185,7 @@ export default async function handler(req, res) {
         quantity,
         safetyStock
       );
-
-      return {
-        task,
-        data
-      };
+      return { task, data };
     });
 
     const allResults = [];
@@ -191,6 +197,7 @@ export default async function handler(req, res) {
       }
 
       const stores = Array.isArray(item.data?.stores) ? item.data.stores : [];
+      const meta = getProductMeta(item.task.productCode);
 
       for (const store of stores) {
         const storeId = store?.id || "";
@@ -202,14 +209,18 @@ export default async function handler(req, res) {
         seen.add(uniqueKey);
 
         const stockInfo = store?.productStockInfo || {};
-        const stock = Number.isFinite(Number(stockInfo.stock)) ? Number(stockInfo.stock) : 0;
+        const stock = Number.isFinite(Number(stockInfo.stock))
+          ? Number(stockInfo.stock)
+          : 0;
 
         allResults.push({
           cp: resolveStorePostalCode(store?.name || ""),
           magasin: store?.name || "",
           codeArticle: item.task.productCode,
+          libelle: meta.libelle,
+          imageUrl: meta.imageUrl,
           stocks: stock,
-          status: getBusinessStatus(stock, safetyStock)
+          status: getBusinessStatus(stock, safetyStock),
         });
       }
     }
