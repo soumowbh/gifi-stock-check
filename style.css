@@ -11,6 +11,8 @@
   --warn-bg: #fef3c7;
   --bad: #b91c1c;
   --bad-bg: #fee2e2;
+  --vip-yellow: #ffe45c;
+  --vip-red: #c1121f;
 }
 
 * {
@@ -89,7 +91,7 @@ button:hover {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 .product-card {
@@ -122,12 +124,76 @@ button:hover {
 
 .product-ref {
   color: var(--muted);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.product-price-area {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .product-price {
-  font-size: 22px;
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.product-vip-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.vip-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  background: var(--vip-yellow);
+  color: var(--vip-red);
+  font-weight: 800;
+  font-size: 13px;
+  text-transform: uppercase;
+  border-radius: 6px;
+  line-height: 1;
+}
+
+.vip-discount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  background: #fff1f2;
+  color: var(--vip-red);
+  font-weight: 800;
+  font-size: 13px;
+  border-radius: 999px;
+  line-height: 1;
+}
+
+.old-price-diagonal {
+  position: relative;
+  display: inline-block;
+  color: #6b7280;
   font-weight: 700;
+  padding: 2px 4px;
+  font-size: 16px;
+}
+
+.old-price-diagonal::after {
+  content: "";
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  top: 50%;
+  height: 2px;
+  background: var(--vip-red);
+  transform: rotate(-14deg);
+  transform-origin: center;
+  pointer-events: none;
 }
 
 .table-wrap {
@@ -205,6 +271,10 @@ th {
     margin: 0 auto;
   }
 
+  .product-price {
+    font-size: 30px;
+  }
+
   .status-dispo,
   .status-limite,
   .status-indispo {
@@ -212,64 +282,4 @@ th {
     width: 100%;
     justify-content: center;
   }
-  .product-price-area {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.product-vip-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.vip-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 10px;
-  background: #ffe45c;
-  color: #c1121f;
-  font-weight: 700;
-  font-size: 13px;
-  text-transform: uppercase;
-  border-radius: 6px;
-  line-height: 1;
-}
-
-.vip-discount {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 10px;
-  background: #fff1f2;
-  color: #c1121f;
-  font-weight: 700;
-  font-size: 13px;
-  border-radius: 999px;
-  line-height: 1;
-}
-
-.old-price-diagonal {
-  position: relative;
-  display: inline-block;
-  color: #6b7280;
-  font-weight: 700;
-  padding: 2px 4px;
-}
-
-.old-price-diagonal::after {
-  content: "";
-  position: absolute;
-  left: -2px;
-  right: -2px;
-  top: 50%;
-  height: 2px;
-  background: #c1121f;
-  transform: rotate(-14deg);
-  transform-origin: center;
-  pointer-events: none;
-}
 }

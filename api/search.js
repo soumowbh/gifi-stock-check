@@ -61,9 +61,24 @@ function getBusinessStatus(stock, safetyStock) {
   return "Disponible";
 }
 
+function parsePriceToNumber(value) {
+  if (value === null || value === undefined || value === "") return null;
+
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  const normalized = String(value)
+    .replace(/[€\s]/g, "")
+    .replace(",", ".");
+
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 async function fetchJson(url) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 10000);
+  const timeout = setTimeout(() => controller.abort(), 12000);
 
   try {
     const response = await fetch(url, {
@@ -102,15 +117,38 @@ async function fetchProductDetails(productCode) {
     product?.images?.pdp_zoom?.[0]?.absURL ||
     "";
 
-  const salesValue = Number(product?.price?.sales?.value ?? 0);
-  const listValue = Number(product?.price?.list?.value ?? 0);
-  const hasVip = Boolean(product?.vipTag?.name);
+  const salesFormatted = product?.price?.sales?.formatted || "";
+  const salesValue = parsePriceToNumber(product?.price?.sales?.value);
+
+  const listFormatted = product?.price?.list?.formatted || "";
+  const listValue = parsePriceToNumber(product?.price?.list?.value);
+
+  const vipEnabled = Boolean(product?.vipTag?.name);
   const vipLabel = product?.vipTag?.name || "";
   const vipPriceInfo = product?.vipTag?.priceInfo || "";
 
+  const vipPriceInfoValue = parsePriceToNumber(vipPriceInfo);
+
+  let oldPriceFormatted = "";
+  let oldPriceValue = null;
+
+  if (listFormatted && listValue && listValue > 0) {
+    oldPriceFormatted = listFormatted;
+    oldPriceValue = listValue;
+  } else if (vipEnabled && vipPriceInfoValue && vipPriceInfoValue > 0) {
+    oldPriceFormatted = `${vipPriceInfoValue.toFixed(2).replace(".", ",")} €`;
+    oldPriceValue = vipPriceInfoValue;
+  }
+
   let discountPercent = null;
-  if (listValue > 0 && salesValue > 0 && salesValue < listValue) {
-    discountPercent = Math.round(((listValue - salesValue) / listValue) * 100);
+  if (
+    oldPriceValue &&
+    salesValue &&
+    oldPriceValue > 0 &&
+    salesValue > 0 &&
+    salesValue < oldPriceValue
+  ) {
+    discountPercent = Math.round(((oldPriceValue - salesValue) / oldPriceValue) * 100);
   }
 
   return {
@@ -118,19 +156,19 @@ async function fetchProductDetails(productCode) {
     codeArticle: String(productCode).replace(/\D/g, ""),
     libelle: product?.productName || "",
     imageUrl,
-    prix: product?.price?.sales?.formatted || "",
-    prixValeur: salesValue || null,
-    prixListe: product?.price?.list?.formatted || "",
-    prixListeValeur: listValue || null,
+    prix: salesFormatted,
+    prixValeur: salesValue,
+    ancienPrix: oldPriceFormatted,
+    ancienPrixValeur: oldPriceValue,
     disponibleWeb: Boolean(product?.available),
     vip: {
-      enabled: hasVip,
+      enabled: vipEnabled,
       label: vipLabel,
-      priceInfo: vipPriceInfo,
       discountPercent,
     },
   };
 }
+
 async function fetchStoreStocks(productCode, quantity, safetyStock, postalCode) {
   const productId = toProductId(productCode);
   const productsParam = encodeURIComponent(`${productId}:${quantity}`);

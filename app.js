@@ -39,10 +39,10 @@ function clearProductCard() {
   productTitle.textContent = "";
   productRef.textContent = "";
   productPrice.textContent = "";
-  productVipRow.classList.add("hidden");
   productVipBadge.textContent = "";
   productDiscount.textContent = "";
   productOldPrice.textContent = "";
+  productVipRow.classList.add("hidden");
 }
 
 function renderProduct(product) {
@@ -54,20 +54,15 @@ function renderProduct(product) {
   productImage.src = product.imageUrl || "";
   productImage.alt = product.libelle || product.codeArticle || "Produit";
   productTitle.textContent = product.libelle || "";
-  productRef.textContent = product.codeArticle
-    ? `Réf. ${product.codeArticle}`
-    : "";
+  productRef.textContent = product.codeArticle ? `Réf. ${product.codeArticle}` : "";
   productPrice.textContent = product.prix || "";
 
-  const hasVip =
-    product?.vip?.enabled &&
-    product?.prixListe &&
-    product?.vip?.discountPercent;
-
-  if (hasVip) {
+  if (product?.vip?.enabled) {
     productVipBadge.textContent = product.vip.label || "Offre VIP";
-    productDiscount.textContent = `-${product.vip.discountPercent}%`;
-    productOldPrice.textContent = product.prixListe || "";
+    productDiscount.textContent = product?.vip?.discountPercent
+      ? `-${product.vip.discountPercent}%`
+      : "";
+    productOldPrice.textContent = product.ancienPrix || "";
     productVipRow.classList.remove("hidden");
   } else {
     productVipBadge.textContent = "";
@@ -108,7 +103,7 @@ function renderResults(rows) {
     .join("");
 }
 
-searchBtn.addEventListener("click", async () => {
+async function runSearch() {
   const productCode = productCodeInput.value.trim();
   const quantity = Number(quantityInput.value || 1);
   const safetyStock = Number(safetyStockInput.value || 5);
@@ -150,5 +145,14 @@ searchBtn.addEventListener("click", async () => {
     clearProductCard();
     renderResults([]);
     statusText.textContent = `Erreur : ${error.message}`;
+  }
+}
+
+searchBtn.addEventListener("click", runSearch);
+
+productCodeInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    runSearch();
   }
 });
