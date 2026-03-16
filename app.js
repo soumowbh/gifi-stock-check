@@ -10,6 +10,10 @@ const productImage = document.getElementById("productImage");
 const productTitle = document.getElementById("productTitle");
 const productRef = document.getElementById("productRef");
 const productPrice = document.getElementById("productPrice");
+const productVipRow = document.getElementById("productVipRow");
+const productVipBadge = document.getElementById("productVipBadge");
+const productDiscount = document.getElementById("productDiscount");
+const productOldPrice = document.getElementById("productOldPrice");
 
 const API_BASE = "https://gifi-stock-check.vercel.app";
 
@@ -35,6 +39,10 @@ function clearProductCard() {
   productTitle.textContent = "";
   productRef.textContent = "";
   productPrice.textContent = "";
+  productVipRow.classList.add("hidden");
+  productVipBadge.textContent = "";
+  productDiscount.textContent = "";
+  productOldPrice.textContent = "";
 }
 
 function renderProduct(product) {
@@ -50,6 +58,23 @@ function renderProduct(product) {
     ? `Réf. ${product.codeArticle}`
     : "";
   productPrice.textContent = product.prix || "";
+
+  const hasVip =
+    product?.vip?.enabled &&
+    product?.prixListe &&
+    product?.vip?.discountPercent;
+
+  if (hasVip) {
+    productVipBadge.textContent = product.vip.label || "Offre VIP";
+    productDiscount.textContent = `-${product.vip.discountPercent}%`;
+    productOldPrice.textContent = product.prixListe || "";
+    productVipRow.classList.remove("hidden");
+  } else {
+    productVipBadge.textContent = "";
+    productDiscount.textContent = "";
+    productOldPrice.textContent = "";
+    productVipRow.classList.add("hidden");
+  }
 
   productCard.classList.remove("hidden");
 }

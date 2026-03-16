@@ -212,4 +212,64 @@ th {
     width: 100%;
     justify-content: center;
   }
+  .product-price-area {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.product-vip-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.vip-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  background: #ffe45c;
+  color: #c1121f;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  border-radius: 6px;
+  line-height: 1;
+}
+
+.vip-discount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  background: #fff1f2;
+  color: #c1121f;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: 999px;
+  line-height: 1;
+}
+
+.old-price-diagonal {
+  position: relative;
+  display: inline-block;
+  color: #6b7280;
+  font-weight: 700;
+  padding: 2px 4px;
+}
+
+.old-price-diagonal::after {
+  content: "";
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  top: 50%;
+  height: 2px;
+  background: #c1121f;
+  transform: rotate(-14deg);
+  transform-origin: center;
+  pointer-events: none;
+}
 }

@@ -102,16 +102,35 @@ async function fetchProductDetails(productCode) {
     product?.images?.pdp_zoom?.[0]?.absURL ||
     "";
 
+  const salesValue = Number(product?.price?.sales?.value ?? 0);
+  const listValue = Number(product?.price?.list?.value ?? 0);
+  const hasVip = Boolean(product?.vipTag?.name);
+  const vipLabel = product?.vipTag?.name || "";
+  const vipPriceInfo = product?.vipTag?.priceInfo || "";
+
+  let discountPercent = null;
+  if (listValue > 0 && salesValue > 0 && salesValue < listValue) {
+    discountPercent = Math.round(((listValue - salesValue) / listValue) * 100);
+  }
+
   return {
     productId,
     codeArticle: String(productCode).replace(/\D/g, ""),
     libelle: product?.productName || "",
     imageUrl,
     prix: product?.price?.sales?.formatted || "",
+    prixValeur: salesValue || null,
+    prixListe: product?.price?.list?.formatted || "",
+    prixListeValeur: listValue || null,
     disponibleWeb: Boolean(product?.available),
+    vip: {
+      enabled: hasVip,
+      label: vipLabel,
+      priceInfo: vipPriceInfo,
+      discountPercent,
+    },
   };
 }
-
 async function fetchStoreStocks(productCode, quantity, safetyStock, postalCode) {
   const productId = toProductId(productCode);
   const productsParam = encodeURIComponent(`${productId}:${quantity}`);
