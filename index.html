@@ -2,103 +2,53 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  />
-  <title>Recherche stock GiFi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stock GiFi</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <main class="container">
+  <div class="container">
     <h1>Recherche stock GiFi</h1>
 
-    <section class="card">
-      <div class="form-grid">
+    <div class="card">
+      <div class="form-grid single-field-grid">
         <div>
           <label for="productCode">Code article</label>
           <input
             id="productCode"
             type="text"
+            placeholder="Ex: 643421"
             inputmode="numeric"
-            placeholder="Ex: 643200"
-            autocomplete="off"
+            enterkeyhint="search"
           />
         </div>
-
-        <div class="inline-grid">
-          <div>
-            <label for="quantity">Quantité</label>
-            <input id="quantity" type="number" min="1" step="1" value="1" />
-          </div>
-
-          <div>
-            <label for="safetyStock">Seuil stock</label>
-            <input id="safetyStock" type="number" min="0" step="1" value="5" />
-          </div>
-        </div>
       </div>
 
-      <div class="actions">
-        <button id="searchBtn" type="button">Rechercher</button>
+      <div class="hidden-fields" aria-hidden="true">
+        <input id="quantity" type="hidden" value="1" />
+        <input id="safetyStock" type="hidden" value="5" />
       </div>
 
-      <p id="statusText" class="status-text">Prêt.</p>
-    </section>
+      <div class="mt">
+        <button id="searchBtn">Rechercher</button>
+      </div>
+    </div>
 
-    <section id="productCard" class="card product-card hidden">
+    <div id="productCard" class="card product-card hidden">
       <div class="product-layout">
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        <div class="product-left">
-          <div class="gallery-shell">
-            <div class="gallery-thumbs" id="galleryThumbs"></div>
+        <div class="product-visual">
+          <div class="product-gallery-shell">
+            <button id="galleryPrev" class="gallery-nav gallery-nav--prev hidden" type="button" aria-label="Image précédente">‹</button>
 
-            <div class="gallery-stage">
-              <button
-                type="button"
-                id="galleryPrev"
-                class="gallery-nav gallery-nav--prev hidden"
-                aria-label="Image précédente"
-              >
-                ‹
-              </button>
+            <div id="productGallery" class="product-gallery"></div>
 
-              <div id="productGallery" class="product-gallery"></div>
-
-              <button
-                type="button"
-                id="galleryNext"
-                class="gallery-nav gallery-nav--next hidden"
-                aria-label="Image suivante"
-              >
-                ›
-              </button>
-
-              <div id="productGalleryCounter" class="gallery-counter hidden"></div>
-            </div>
+            <button id="galleryNext" class="gallery-nav gallery-nav--next hidden" type="button" aria-label="Image suivante">›</button>
           </div>
-=======
-        <div class="product-visual">
-          <div id="productGallery" class="product-gallery"></div>
-        </div>
->>>>>>> parent of e3fbee9 (Fix product gallery)
-=======
-        <div class="product-visual">
-          <div id="productGallery" class="product-gallery"></div>
-        </div>
->>>>>>> parent of e3fbee9 (Fix product gallery)
-=======
-        <div class="product-visual">
-          <div id="productGallery" class="product-gallery"></div>
-        </div>
->>>>>>> parent of e3fbee9 (Fix product gallery)
-
+          
           <div id="productGalleryDots" class="product-gallery-dots"></div>
-        </div>
+      </div>
 
-        <div class="product-right">
+        <div class="product-meta">
           <div id="productTitle" class="product-title"></div>
           <div id="productRef" class="product-ref"></div>
 
@@ -116,11 +66,6 @@
             </div>
 
             <div id="productPromoRow" class="promo-block hidden">
-              <div class="promo-badges">
-                <div id="productPromoBadge" class="promo-badge"></div>
-                <div id="productDiscount" class="promo-discount"></div>
-              </div>
-
               <div class="old-price-wrap">
                 <div class="old-price-diagonal">
                   <span id="productOldPriceInteger" class="old-price-integer"></span>
@@ -130,40 +75,41 @@
                   </span>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div id="productDescription" class="product-description hidden"></div>
-
-          <div id="productMeta" class="product-meta hidden"></div>
-
-          <div id="limonestCard" class="limonest-card hidden">
-            <div class="limonest-card__title">Stock Limonest</div>
-
-            <div class="limonest-card__content">
-              <div class="limonest-metric">
-                <span class="limonest-metric__label">Stock</span>
-                <span id="limonestStock" class="limonest-metric__value"></span>
-              </div>
-
-              <div class="limonest-metric">
-                <span class="limonest-metric__label">Statut</span>
-                <span id="limonestStatus" class="mini-status"></span>
+              <div class="promo-badges">
+                <span id="productPromoBadge" class="promo-badge"></span>
+                <span id="productDiscount" class="promo-discount"></span>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </section>
 
-    <section class="card">
+      <div id="limonestCard" class="limonest-card hidden">
+        <div class="limonest-card__title">Stock Limonest</div>
+        <div class="limonest-card__content">
+          <div class="limonest-metric">
+            <span class="limonest-metric__label">Stock</span>
+            <span id="limonestStock" class="limonest-metric__value"></span>
+          </div>
+          <div class="limonest-metric">
+            <span class="limonest-metric__label">Statut</span>
+            <span id="limonestStatus" class="mini-status"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div id="statusText">Prêt.</div>
+
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
               <th>Magasin</th>
               <th>Stocks</th>
-              <th>Statut</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody id="resultsBody">
@@ -173,8 +119,8 @@
           </tbody>
         </table>
       </div>
-    </section>
-  </main>
+    </div>
+  </div>
 
   <script src="./app.js"></script>
 </body>

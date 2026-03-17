@@ -6,20 +6,14 @@ const resultsBody = document.getElementById("resultsBody");
 const statusText = document.getElementById("statusText");
 
 const productCard = document.getElementById("productCard");
-<<<<<<< HEAD
-=======
 const productGallery = document.getElementById("productGallery");
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> parent of e3fbee9 (Fix product gallery)
-=======
->>>>>>> parent of e3fbee9 (Fix product gallery)
-=======
->>>>>>> parent of e3fbee9 (Fix product gallery)
+const productGalleryDots = document.getElementById("productGalleryDots");
+const galleryPrev = document.getElementById("galleryPrev");
+const galleryNext = document.getElementById("galleryNext");
+let currentGalleryImages = [];
+let currentGalleryIndex = 0;
 const productTitle = document.getElementById("productTitle");
 const productRef = document.getElementById("productRef");
-const productDescription = document.getElementById("productDescription");
-const productMeta = document.getElementById("productMeta");
 
 const productCurrentInteger = document.getElementById("productCurrentInteger");
 const productCurrentDecimal = document.getElementById("productCurrentDecimal");
@@ -28,7 +22,6 @@ const productCurrentCurrency = document.getElementById("productCurrentCurrency")
 const productPromoRow = document.getElementById("productPromoRow");
 const productPromoBadge = document.getElementById("productPromoBadge");
 const productDiscount = document.getElementById("productDiscount");
-
 const productOldPriceInteger = document.getElementById("productOldPriceInteger");
 const productOldPriceDecimal = document.getElementById("productOldPriceDecimal");
 const productOldPriceCurrency = document.getElementById("productOldPriceCurrency");
@@ -39,18 +32,7 @@ const limonestCard = document.getElementById("limonestCard");
 const limonestStock = document.getElementById("limonestStock");
 const limonestStatus = document.getElementById("limonestStatus");
 
-const productGallery = document.getElementById("productGallery");
-const productGalleryDots = document.getElementById("productGalleryDots");
-const productGalleryCounter = document.getElementById("productGalleryCounter");
-const galleryThumbs = document.getElementById("galleryThumbs");
-const galleryPrev = document.getElementById("galleryPrev");
-const galleryNext = document.getElementById("galleryNext");
-
 const API_BASE = "https://gifi-stock-check.vercel.app";
-
-let currentGalleryImages = [];
-let currentGalleryIndex = 0;
-let currentProductData = null;
 
 function getStatusClass(status) {
   if (status === "Disponible") return "status-dispo";
@@ -64,12 +46,11 @@ function escapeHtml(value) {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    .replaceAll("'", "&#39;");
 }
 
 function parseFormattedPrice(price) {
   const raw = String(price || "").trim();
-
   if (!raw) {
     return {
       integer: "",
@@ -78,17 +59,12 @@ function parseFormattedPrice(price) {
     };
   }
 
-  const normalized = raw
-    .replace(/\s/g, "")
-    .replace(/[^\d,.\-€]/g, "")
-    .replace(".", ",")
-    .replace("€", "");
-
-  const [integerPart = "", decimalPart = ""] = normalized.split(",");
+  const cleaned = raw.replace(/\s/g, "").replace("€", "");
+  const [integerPart = "", decimalPart = ""] = cleaned.split(",");
 
   return {
-    integer: integerPart || "",
-    decimal: decimalPart || "",
+    integer: integerPart,
+    decimal: decimalPart,
     currency: "€",
   };
 }
@@ -100,136 +76,73 @@ function setPriceParts(targetInteger, targetDecimal, targetCurrency, formattedPr
   targetCurrency.textContent = parts.currency;
 }
 
-function normalizeImage(url) {
-  if (!url) return "";
-  return String(url).trim();
-}
-
-function uniqueImages(images) {
-  const seen = new Set();
-  const out = [];
-
-  for (const image of images || []) {
-    const url = normalizeImage(image);
-    if (!url || seen.has(url)) continue;
-    seen.add(url);
-    out.push(url);
-  }
-
-  return out;
-}
-
-function getResponsiveImages(product) {
-  const mobileImages = uniqueImages(product?.images?.pdp_mobile || []);
-  const tabletImages = uniqueImages(product?.images?.pdp_tablet || []);
-  const largeImages = uniqueImages(product?.images?.pdp_large || []);
-  const commonImages = uniqueImages(product?.images?.all || []);
-
-  if (window.innerWidth <= 767) {
-    return mobileImages.length
-      ? mobileImages
-      : tabletImages.length
-        ? tabletImages
-        : largeImages.length
-          ? largeImages
-          : commonImages;
-  }
-
-  if (window.innerWidth <= 1024) {
-    return tabletImages.length
-      ? tabletImages
-      : largeImages.length
-        ? largeImages
-        : mobileImages.length
-          ? mobileImages
-          : commonImages;
-  }
-
-  return largeImages.length
-    ? largeImages
-    : tabletImages.length
-      ? tabletImages
-      : mobileImages.length
-        ? mobileImages
-        : commonImages;
-}
-
 function clearLimonestCard() {
   limonestStock.textContent = "";
   limonestStatus.textContent = "";
   limonestStatus.className = "mini-status";
   limonestCard.classList.add("hidden");
 }
+function getResponsiveImages(product) {
+  const mobileImages = product?.images?.pdp_mobile || [];
+  const tabletImages = product?.images?.pdp_tablet || [];
+  const largeImages = product?.images?.pdp_large || [];
 
-function updateGalleryThumbs() {
-  if (!currentGalleryImages.length) {
-    galleryThumbs.innerHTML = "";
-    return;
+  if (window.innerWidth <= 767) {
+    return mobileImages.length ? mobileImages : (tabletImages.length ? tabletImages : largeImages);
   }
 
-  galleryThumbs.innerHTML = currentGalleryImages
-    .map((url, index) => {
-      return `
-        <button
-          type="button"
-          class="gallery-thumb ${index === currentGalleryIndex ? "is-active" : ""}"
-          data-index="${index}"
-          aria-label="Voir l'image ${index + 1}"
-        >
-          <img
-            src="${escapeHtml(url)}"
-            alt="Miniature produit ${index + 1}"
-            loading="lazy"
-            decoding="async"
-          />
-        </button>
-      `;
-    })
-    .join("");
+  if (window.innerWidth <= 1024) {
+    return tabletImages.length ? tabletImages : (largeImages.length ? largeImages : mobileImages);
+  }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-  galleryThumbs.querySelectorAll(".gallery-thumb").forEach((thumb) => {
-    thumb.addEventListener("click", () => {
-      scrollToGalleryIndex(Number(thumb.dataset.index));
-    });
-  });
+  return largeImages.length ? largeImages : (tabletImages.length ? tabletImages : mobileImages);
+}
+function getResponsiveImages(product) {
+  const mobileImages = product?.images?.pdp_mobile || [];
+  const tabletImages = product?.images?.pdp_tablet || [];
+  const largeImages = product?.images?.pdp_large || [];
+
+  if (window.innerWidth <= 767) {
+    return mobileImages.length ? mobileImages : (tabletImages.length ? tabletImages : largeImages);
+  }
+
+  if (window.innerWidth <= 1024) {
+    return tabletImages.length ? tabletImages : (largeImages.length ? largeImages : mobileImages);
+  }
+
+  return largeImages.length ? largeImages : (tabletImages.length ? tabletImages : mobileImages);
 }
 
 function updateGalleryDots() {
   if (!currentGalleryImages.length) {
     productGalleryDots.innerHTML = "";
-    productGalleryCounter.classList.add("hidden");
-    productGalleryCounter.textContent = "";
     return;
   }
 
   productGalleryDots.innerHTML = currentGalleryImages
-    .map((_, index) => {
-      return `
+    .map(
+      (_, index) => `
         <button
           type="button"
           class="gallery-dot ${index === currentGalleryIndex ? "is-active" : ""}"
           data-index="${index}"
-          aria-label="Aller à l'image ${index + 1}"
-        ></button>
-      `;
-    })
+          aria-label="Aller à l'image ${index + 1}">
+        </button>
+      `
+    )
     .join("");
 
   productGalleryDots.querySelectorAll(".gallery-dot").forEach((dot) => {
     dot.addEventListener("click", () => {
-      scrollToGalleryIndex(Number(dot.dataset.index));
+      const index = Number(dot.dataset.index);
+      scrollToGalleryIndex(index);
     });
   });
-
-  productGalleryCounter.classList.toggle("hidden", currentGalleryImages.length <= 1);
-  productGalleryCounter.textContent = `${currentGalleryIndex + 1} / ${currentGalleryImages.length}`;
 }
 
 function updateGalleryNav() {
   const hasMultiple = currentGalleryImages.length > 1;
+
   galleryPrev.classList.toggle("hidden", !hasMultiple);
   galleryNext.classList.toggle("hidden", !hasMultiple);
 
@@ -243,180 +156,73 @@ function scrollToGalleryIndex(index) {
   if (!productGallery || !currentGalleryImages.length) return;
 
   const safeIndex = Math.max(0, Math.min(index, currentGalleryImages.length - 1));
-  const width = productGallery.clientWidth || 1;
+  const width = productGallery.clientWidth;
 
   currentGalleryIndex = safeIndex;
-
   productGallery.scrollTo({
     left: width * safeIndex,
     behavior: "smooth",
   });
 
-  updateGalleryThumbs();
   updateGalleryDots();
   updateGalleryNav();
 }
 
 function handleGalleryScroll() {
-  if (!productGallery || !currentGalleryImages.length) return;
-
+  if (!productGallery) return;
   const width = productGallery.clientWidth || 1;
   const index = Math.round(productGallery.scrollLeft / width);
 
   if (index !== currentGalleryIndex) {
     currentGalleryIndex = index;
-    updateGalleryThumbs();
     updateGalleryDots();
     updateGalleryNav();
   }
-=======
-  return largeImages.length ? largeImages : (tabletImages.length ? tabletImages : mobileImages);
->>>>>>> parent of e3fbee9 (Fix product gallery)
-=======
-  return largeImages.length ? largeImages : (tabletImages.length ? tabletImages : mobileImages);
->>>>>>> parent of e3fbee9 (Fix product gallery)
-=======
-  return largeImages.length ? largeImages : (tabletImages.length ? tabletImages : mobileImages);
->>>>>>> parent of e3fbee9 (Fix product gallery)
 }
 
 function renderGallery(product) {
   const images = getResponsiveImages(product);
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-
   currentGalleryImages = images;
   currentGalleryIndex = 0;
 
   if (!images.length) {
-    productGallery.innerHTML = `
-      <div class="product-gallery__item">
-        <img
-          src="https://placehold.co/900x900?text=Pas+d%27image"
-          alt="Aucune image disponible"
-        />
-      </div>
-    `;
-    galleryThumbs.innerHTML = "";
+    productGallery.innerHTML = "";
     productGalleryDots.innerHTML = "";
     galleryPrev.classList.add("hidden");
     galleryNext.classList.add("hidden");
-    productGalleryCounter.classList.add("hidden");
-=======
-
-  if (!images.length) {
-    productGallery.innerHTML = "";
->>>>>>> parent of e3fbee9 (Fix product gallery)
-=======
-
-  if (!images.length) {
-    productGallery.innerHTML = "";
->>>>>>> parent of e3fbee9 (Fix product gallery)
-=======
-
-  if (!images.length) {
-    productGallery.innerHTML = "";
->>>>>>> parent of e3fbee9 (Fix product gallery)
     return;
   }
 
   productGallery.innerHTML = images
-    .map((url, index) => {
-      const eager = index === 0 ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
-      return `
+    .map(
+      (url, index) => `
         <div class="product-gallery__item">
           <img
             src="${escapeHtml(url)}"
-<<<<<<< HEAD
-            alt="${escapeHtml(product?.libelle || "Produit")}"
-            ${eager}
-            decoding="async"
-=======
             alt="${escapeHtml(product.libelle || `Photo ${index + 1}`)}"
-            loading="lazy"
->>>>>>> parent of c952bbe (Fix renderGallery)
+            loading="${index === 0 ? "eager" : "lazy"}"
           />
         </div>
-      `;
-    })
+      `
+    )
     .join("");
-<<<<<<< HEAD
 
   productGallery.scrollLeft = 0;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-  updateGalleryThumbs();
   updateGalleryDots();
   updateGalleryNav();
-=======
->>>>>>> parent of e3fbee9 (Fix product gallery)
-}
-
-function renderMeta(product) {
-  const chips = [];
-
-  if (product?.vip?.enabled) {
-    chips.push(`<span class="product-chip">${escapeHtml(product.vip.label || "Offre VIP")}</span>`);
-  }
-
-  if (product?.collection) {
-    chips.push(`<span class="product-chip">${escapeHtml(product.collection)}</span>`);
-  }
-
-  if (product?.brand) {
-    chips.push(`<span class="product-chip">${escapeHtml(product.brand)}</span>`);
-  }
-
-  if (product?.category) {
-    chips.push(`<span class="product-chip">${escapeHtml(product.category)}</span>`);
-  }
-
-  productMeta.innerHTML = chips.join("");
-  productMeta.classList.toggle("hidden", chips.length === 0);
 }
 
 function clearProductCard() {
-<<<<<<< HEAD
-  currentProductData = null;
-  currentGalleryImages = [];
-  currentGalleryIndex = 0;
-
-  productCard.classList.add("hidden");
+  window.__currentProductData__ = null;
   productGallery.innerHTML = "";
   productGalleryDots.innerHTML = "";
-  productGalleryCounter.textContent = "";
-  productGalleryCounter.classList.add("hidden");
-  galleryThumbs.innerHTML = "";
+  currentGalleryImages = [];
+  currentGalleryIndex = 0;
   galleryPrev.classList.add("hidden");
   galleryNext.classList.add("hidden");
-
-=======
-  window.__currentProductData__ = null;
   productCard.classList.add("hidden");
-  productGallery.innerHTML = "";
->>>>>>> parent of e3fbee9 (Fix product gallery)
-=======
-=======
->>>>>>> parent of e3fbee9 (Fix product gallery)
-=======
->>>>>>> parent of c952bbe (Fix renderGallery)
-}
-function clearProductCard() {
-  window.__currentProductData__ = null;
-  productCard.classList.add("hidden");
-  productGallery.innerHTML = "";
-<<<<<<< HEAD
->>>>>>> parent of e3fbee9 (Fix product gallery)
-=======
->>>>>>> parent of e3fbee9 (Fix product gallery)
   productTitle.textContent = "";
   productRef.textContent = "";
-  productDescription.textContent = "";
-  productDescription.classList.add("hidden");
-  productMeta.innerHTML = "";
-  productMeta.classList.add("hidden");
 
   productCurrentInteger.textContent = "";
   productCurrentDecimal.textContent = "";
@@ -436,16 +242,14 @@ function clearProductCard() {
 }
 
 function renderProduct(product) {
-  currentProductData = product;
-
+    window.__currentProductData__ = product;
   if (!product) {
     clearProductCard();
     return;
   }
 
   renderGallery(product);
-
-  productTitle.textContent = product.libelle || "Produit";
+  productTitle.textContent = product.libelle || "";
   productRef.textContent = product.codeArticle ? `Réf. ${product.codeArticle}` : "";
 
   setPriceParts(
@@ -456,12 +260,14 @@ function renderProduct(product) {
   );
 
   const showPromoRow = Boolean(
-    product?.vip?.enabled || product?.ancienPrix || product?.vip?.discountPercent
+    product?.vip?.enabled ||
+    product?.ancienPrix ||
+    product?.vip?.discountPercent
   );
 
   if (showPromoRow) {
     productPromoBadge.textContent = product?.vip?.enabled
-      ? product.vip.label || "Offre VIP"
+      ? (product.vip.label || "Offre VIP")
       : "Promo";
 
     productDiscount.textContent = product?.vip?.discountPercent
@@ -477,6 +283,11 @@ function renderProduct(product) {
 
     productPromoRow.classList.remove("hidden");
   } else {
+    productPromoBadge.textContent = "";
+    productDiscount.textContent = "";
+    productOldPriceInteger.textContent = "";
+    productOldPriceDecimal.textContent = "";
+    productOldPriceCurrency.textContent = "€";
     productPromoRow.classList.add("hidden");
   }
 
@@ -484,18 +295,9 @@ function renderProduct(product) {
     productEcoTax.textContent = product.ecoTaxMessage;
     productEcoTax.classList.remove("hidden");
   } else {
+    productEcoTax.textContent = "";
     productEcoTax.classList.add("hidden");
   }
-
-  if (product?.description) {
-    productDescription.textContent = product.description;
-    productDescription.classList.remove("hidden");
-  } else {
-    productDescription.textContent = "";
-    productDescription.classList.add("hidden");
-  }
-
-  renderMeta(product);
 
   productCard.classList.remove("hidden");
 }
@@ -527,8 +329,8 @@ function renderResults(rows) {
   }
 
   resultsBody.innerHTML = rows
-    .map((row) => {
-      return `
+    .map(
+      (row) => `
         <tr>
           <td>${escapeHtml(row.magasin)}</td>
           <td>${escapeHtml(row.stocks)}</td>
@@ -538,8 +340,8 @@ function renderResults(rows) {
             </span>
           </td>
         </tr>
-      `;
-    })
+      `
+    )
     .join("");
 }
 
@@ -578,12 +380,10 @@ async function runSearch() {
       throw new Error(data.error || `HTTP ${response.status}`);
     }
 
-    renderProduct(data.product || null);
+    renderProduct(data.product);
     renderLimonestSummary(data.results || []);
     renderResults(data.results || []);
-
-    const lineCount = data.results?.length || 0;
-    statusText.textContent = `${lineCount} ligne(s) affichée(s).`;
+    statusText.textContent = `${data.results?.length || 0} ligne(s) affichée(s).`;
   } catch (error) {
     clearProductCard();
     renderResults([]);
@@ -603,40 +403,9 @@ productCodeInput.addEventListener("keydown", (event) => {
     runSearch();
   }
 });
-
-galleryPrev.addEventListener("click", () => {
-  scrollToGalleryIndex(currentGalleryIndex - 1);
-});
-
-galleryNext.addEventListener("click", () => {
-  scrollToGalleryIndex(currentGalleryIndex + 1);
-});
-
-productGallery.addEventListener("scroll", handleGalleryScroll, { passive: true });
-
 window.addEventListener("resize", () => {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-  if (currentProductData) {
-    renderGallery(currentProductData);
-=======
-=======
->>>>>>> parent of e3fbee9 (Fix product gallery)
-=======
->>>>>>> parent of e3fbee9 (Fix product gallery)
-  if (!productCard.classList.contains("hidden") && productTitle.textContent) {
-    // on relance un rendu léger si un produit est déjà affiché
-    const currentProduct = window.__currentProductData__;
-    if (currentProduct) {
-      renderGallery(currentProduct);
-    }
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> parent of e3fbee9 (Fix product gallery)
-=======
->>>>>>> parent of e3fbee9 (Fix product gallery)
-=======
->>>>>>> parent of e3fbee9 (Fix product gallery)
+  const currentProduct = window.__currentProductData__;
+  if (currentProduct) {
+    renderGallery(currentProduct);
   }
 });
