@@ -11,7 +11,7 @@
     <h1>Recherche stock GiFi</h1>
 
     <div class="card">
-      <div class="form-grid">
+      <div class="form-grid single-field-grid">
         <div>
           <label for="productCode">Code article</label>
           <input
@@ -19,24 +19,18 @@
             type="text"
             placeholder="Ex: 643421"
             inputmode="numeric"
+            enterkeyhint="search"
           />
-        </div>
-
-        <div>
-          <label for="quantity">Quantité</label>
-          <input id="quantity" type="number" min="1" value="1" />
         </div>
       </div>
 
-      <div class="form-grid mt">
-        <div>
-          <label for="safetyStock">Safety stock</label>
-          <input id="safetyStock" type="number" min="0" value="5" />
-        </div>
+      <div class="hidden-fields" aria-hidden="true">
+        <input id="quantity" type="hidden" value="1" />
+        <input id="safetyStock" type="hidden" value="5" />
+      </div>
 
-        <div class="align-end">
-          <button id="searchBtn">Rechercher</button>
-        </div>
+      <div class="mt">
+        <button id="searchBtn">Rechercher</button>
       </div>
     </div>
 
@@ -82,6 +76,20 @@
           </div>
         </div>
       </div>
+
+      <div id="limonestCard" class="limonest-card hidden">
+        <div class="limonest-card__title">Stock Limonest</div>
+        <div class="limonest-card__content">
+          <div class="limonest-metric">
+            <span class="limonest-metric__label">Stock</span>
+            <span id="limonestStock" class="limonest-metric__value"></span>
+          </div>
+          <div class="limonest-metric">
+            <span class="limonest-metric__label">Statut</span>
+            <span id="limonestStatus" class="mini-status"></span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="card">
@@ -91,16 +99,14 @@
         <table>
           <thead>
             <tr>
-              <th>CP</th>
               <th>Magasin</th>
-              <th>Code Article</th>
               <th>Stocks</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody id="resultsBody">
             <tr>
-              <td colspan="5" class="empty">Aucun résultat.</td>
+              <td colspan="3" class="empty">Aucun résultat.</td>
             </tr>
           </tbody>
         </table>

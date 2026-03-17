@@ -245,7 +245,7 @@ export default async function handler(req, res) {
 
     const product = await fetchProductDetails(productCode);
 
-    const allowedPostalCodes = new Set(["69100", "69400"]);
+    const allowedPostalCodes = new Set(["69100", "69400", "69760"]);
     const filteredStores = STORES.filter(
       (store, index, array) =>
         allowedPostalCodes.has(store.postalCode) &&
@@ -297,7 +297,12 @@ export default async function handler(req, res) {
     }
 
     results.sort((a, b) => {
-      if (a.cp !== b.cp) return a.cp.localeCompare(b.cp);
+      const aIsLimonest = normalizeText(a.magasin).includes("limonest");
+      const bIsLimonest = normalizeText(b.magasin).includes("limonest");
+
+      if (aIsLimonest && !bIsLimonest) return -1;
+      if (!aIsLimonest && bIsLimonest) return 1;
+
       return a.magasin.localeCompare(b.magasin);
     });
 

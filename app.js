@@ -23,6 +23,10 @@ const productOldPriceCurrency = document.getElementById("productOldPriceCurrency
 
 const productEcoTax = document.getElementById("productEcoTax");
 
+const limonestCard = document.getElementById("limonestCard");
+const limonestStock = document.getElementById("limonestStock");
+const limonestStatus = document.getElementById("limonestStatus");
+
 const API_BASE = "https://gifi-stock-check.vercel.app";
 
 function getStatusClass(status) {
@@ -67,6 +71,13 @@ function setPriceParts(targetInteger, targetDecimal, targetCurrency, formattedPr
   targetCurrency.textContent = parts.currency;
 }
 
+function clearLimonestCard() {
+  limonestStock.textContent = "";
+  limonestStatus.textContent = "";
+  limonestStatus.className = "mini-status";
+  limonestCard.classList.add("hidden");
+}
+
 function clearProductCard() {
   productCard.classList.add("hidden");
   productImage.src = "";
@@ -87,6 +98,8 @@ function clearProductCard() {
 
   productEcoTax.textContent = "";
   productEcoTax.classList.add("hidden");
+
+  clearLimonestCard();
 }
 
 function renderProduct(product) {
@@ -150,11 +163,27 @@ function renderProduct(product) {
   productCard.classList.remove("hidden");
 }
 
+function renderLimonestSummary(rows) {
+  const limonest = (rows || []).find((row) =>
+    String(row.magasin || "").toLowerCase().includes("limonest")
+  );
+
+  if (!limonest) {
+    clearLimonestCard();
+    return;
+  }
+
+  limonestStock.textContent = `${limonest.stocks}`;
+  limonestStatus.textContent = limonest.status;
+  limonestStatus.className = `mini-status ${getStatusClass(limonest.status)}`;
+  limonestCard.classList.remove("hidden");
+}
+
 function renderResults(rows) {
   if (!rows || rows.length === 0) {
     resultsBody.innerHTML = `
       <tr>
-        <td colspan="5" class="empty">Aucun résultat.</td>
+        <td colspan="3" class="empty">Aucun résultat.</td>
       </tr>
     `;
     return;
@@ -164,9 +193,7 @@ function renderResults(rows) {
     .map(
       (row) => `
         <tr>
-          <td>${escapeHtml(row.cp)}</td>
           <td>${escapeHtml(row.magasin)}</td>
-          <td>${escapeHtml(row.codeArticle)}</td>
           <td>${escapeHtml(row.stocks)}</td>
           <td>
             <span class="${getStatusClass(row.status)}">
@@ -181,8 +208,8 @@ function renderResults(rows) {
 
 async function runSearch() {
   const productCode = productCodeInput.value.trim();
-  const quantity = Number(quantityInput.value || 1);
-  const safetyStock = Number(safetyStockInput.value || 5);
+  const quantity = Number(quantityInput?.value || 1);
+  const safetyStock = Number(safetyStockInput?.value || 5);
 
   if (!productCode) {
     statusText.textContent = "Saisis un code article.";
@@ -215,6 +242,7 @@ async function runSearch() {
     }
 
     renderProduct(data.product);
+    renderLimonestSummary(data.results || []);
     renderResults(data.results || []);
     statusText.textContent = `${data.results?.length || 0} ligne(s) affichée(s).`;
   } catch (error) {
