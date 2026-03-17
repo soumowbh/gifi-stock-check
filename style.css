@@ -450,4 +450,44 @@ th {
   .mini-status {
     min-width: auto;
   }
+  .product-gallery {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
+}
+
+.product-gallery::-webkit-scrollbar {
+  height: 8px;
+}
+
+.product-gallery::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 999px;
+}
+
+.product-gallery__item {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+.product-gallery__item img {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+  display: block;
+}
+
+@media (max-width: 900px) {
+  .product-gallery__item img {
+    width: 240px;
+    height: 240px;
+  }
+}
 }

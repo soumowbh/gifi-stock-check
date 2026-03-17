@@ -6,7 +6,7 @@ const resultsBody = document.getElementById("resultsBody");
 const statusText = document.getElementById("statusText");
 
 const productCard = document.getElementById("productCard");
-const productImage = document.getElementById("productImage");
+const productGallery = document.getElementById("productGallery");
 const productTitle = document.getElementById("productTitle");
 const productRef = document.getElementById("productRef");
 
@@ -77,11 +77,48 @@ function clearLimonestCard() {
   limonestStatus.className = "mini-status";
   limonestCard.classList.add("hidden");
 }
+function getResponsiveImages(product) {
+  const mobileImages = product?.images?.pdp_mobile || [];
+  const tabletImages = product?.images?.pdp_tablet || [];
+  const largeImages = product?.images?.pdp_large || [];
 
+  if (window.innerWidth <= 767) {
+    return mobileImages.length ? mobileImages : (tabletImages.length ? tabletImages : largeImages);
+  }
+
+  if (window.innerWidth <= 1024) {
+    return tabletImages.length ? tabletImages : (largeImages.length ? largeImages : mobileImages);
+  }
+
+  return largeImages.length ? largeImages : (tabletImages.length ? tabletImages : mobileImages);
+}
+
+function renderGallery(product) {
+  const images = getResponsiveImages(product);
+
+  if (!images.length) {
+    productGallery.innerHTML = "";
+    return;
+  }
+
+  productGallery.innerHTML = images
+    .map(
+      (url, index) => `
+        <div class="product-gallery__item">
+          <img
+            src="${escapeHtml(url)}"
+            alt="${escapeHtml(product.libelle || `Photo ${index + 1}`)}"
+            loading="lazy"
+          />
+        </div>
+      `
+    )
+    .join("");
+}
 function clearProductCard() {
+  window.__currentProductData__ = null;
   productCard.classList.add("hidden");
-  productImage.src = "";
-  productImage.alt = "";
+  productGallery.innerHTML = "";
   productTitle.textContent = "";
   productRef.textContent = "";
 
@@ -103,13 +140,13 @@ function clearProductCard() {
 }
 
 function renderProduct(product) {
+    window.__currentProductData__ = product;
   if (!product) {
     clearProductCard();
     return;
   }
 
-  productImage.src = product.imageUrl || "";
-  productImage.alt = product.libelle || product.codeArticle || "Produit";
+  renderGallery(product);
   productTitle.textContent = product.libelle || "";
   productRef.textContent = product.codeArticle ? `Réf. ${product.codeArticle}` : "";
 
@@ -262,5 +299,14 @@ productCodeInput.addEventListener("keydown", (event) => {
     event.preventDefault();
     productCodeInput.blur();
     runSearch();
+  }
+});
+window.addEventListener("resize", () => {
+  if (!productCard.classList.contains("hidden") && productTitle.textContent) {
+    // on relance un rendu léger si un produit est déjà affiché
+    const currentProduct = window.__currentProductData__;
+    if (currentProduct) {
+      renderGallery(currentProduct);
+    }
   }
 });

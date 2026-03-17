@@ -115,11 +115,26 @@ async function fetchProductDetails(productCode) {
   const data = await fetchJson(url);
   const product = data?.product || {};
 
-  const imageUrl =
-    product?.images?.pdp_large?.[0]?.absURL ||
+    const images = {
+    pdp_mobile: Array.isArray(product?.images?.pdp_mobile)
+      ? product.images.pdp_mobile.map((img) => img?.absURL || img?.url).filter(Boolean)
+      : [],
+    pdp_tablet: Array.isArray(product?.images?.pdp_tablet)
+      ? product.images.pdp_tablet.map((img) => img?.absURL || img?.url).filter(Boolean)
+      : [],
+    pdp_large: Array.isArray(product?.images?.pdp_large)
+      ? product.images.pdp_large.map((img) => img?.absURL || img?.url).filter(Boolean)
+      : [],
+  };
+
+  const fallbackImage =
+    images.pdp_large[0] ||
+    images.pdp_tablet[0] ||
+    images.pdp_mobile[0] ||
     product?.images?.large?.[0]?.absURL ||
+    product?.images?.large?.[0]?.url ||
     product?.images?.small?.[0]?.absURL ||
-    product?.images?.pdp_zoom?.[0]?.absURL ||
+    product?.images?.small?.[0]?.url ||
     "";
 
   const salesFormatted = product?.price?.sales?.formatted || "";
@@ -168,7 +183,8 @@ async function fetchProductDetails(productCode) {
     productId,
     codeArticle: String(productCode).replace(/\D/g, ""),
     libelle: product?.productName || "",
-    imageUrl,
+    imageUrl: fallbackImage,
+    images,
     prix: salesFormatted,
     prixValeur: salesValue,
     ancienPrix: oldPriceFormatted,
