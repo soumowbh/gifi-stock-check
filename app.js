@@ -10,8 +10,6 @@ const productGallery = document.getElementById("productGallery");
 const productGalleryDots = document.getElementById("productGalleryDots");
 const galleryPrev = document.getElementById("galleryPrev");
 const galleryNext = document.getElementById("galleryNext");
-let currentGalleryImages = [];
-let currentGalleryIndex = 0;
 const productTitle = document.getElementById("productTitle");
 const productRef = document.getElementById("productRef");
 
@@ -34,6 +32,9 @@ const limonestStatus = document.getElementById("limonestStatus");
 
 const API_BASE = "https://gifi-stock-check.vercel.app";
 
+let currentGalleryImages = [];
+let currentGalleryIndex = 0;
+
 function getStatusClass(status) {
   if (status === "Disponible") return "status-dispo";
   if (status === "Stock limité") return "status-limite";
@@ -51,6 +52,7 @@ function escapeHtml(value) {
 
 function parseFormattedPrice(price) {
   const raw = String(price || "").trim();
+
   if (!raw) {
     return {
       integer: "",
@@ -82,35 +84,27 @@ function clearLimonestCard() {
   limonestStatus.className = "mini-status";
   limonestCard.classList.add("hidden");
 }
+
 function getResponsiveImages(product) {
   const mobileImages = product?.images?.pdp_mobile || [];
   const tabletImages = product?.images?.pdp_tablet || [];
   const largeImages = product?.images?.pdp_large || [];
 
   if (window.innerWidth <= 767) {
-    return mobileImages.length ? mobileImages : (tabletImages.length ? tabletImages : largeImages);
+    return mobileImages.length
+      ? mobileImages
+      : (tabletImages.length ? tabletImages : largeImages);
   }
 
   if (window.innerWidth <= 1024) {
-    return tabletImages.length ? tabletImages : (largeImages.length ? largeImages : mobileImages);
+    return tabletImages.length
+      ? tabletImages
+      : (largeImages.length ? largeImages : mobileImages);
   }
 
-  return largeImages.length ? largeImages : (tabletImages.length ? tabletImages : mobileImages);
-}
-function getResponsiveImages(product) {
-  const mobileImages = product?.images?.pdp_mobile || [];
-  const tabletImages = product?.images?.pdp_tablet || [];
-  const largeImages = product?.images?.pdp_large || [];
-
-  if (window.innerWidth <= 767) {
-    return mobileImages.length ? mobileImages : (tabletImages.length ? tabletImages : largeImages);
-  }
-
-  if (window.innerWidth <= 1024) {
-    return tabletImages.length ? tabletImages : (largeImages.length ? largeImages : mobileImages);
-  }
-
-  return largeImages.length ? largeImages : (tabletImages.length ? tabletImages : mobileImages);
+  return largeImages.length
+    ? largeImages
+    : (tabletImages.length ? tabletImages : mobileImages);
 }
 
 function updateGalleryDots() {
@@ -156,9 +150,10 @@ function scrollToGalleryIndex(index) {
   if (!productGallery || !currentGalleryImages.length) return;
 
   const safeIndex = Math.max(0, Math.min(index, currentGalleryImages.length - 1));
-  const width = productGallery.clientWidth;
+  const width = productGallery.clientWidth || 1;
 
   currentGalleryIndex = safeIndex;
+
   productGallery.scrollTo({
     left: width * safeIndex,
     behavior: "smooth",
@@ -170,6 +165,7 @@ function scrollToGalleryIndex(index) {
 
 function handleGalleryScroll() {
   if (!productGallery) return;
+
   const width = productGallery.clientWidth || 1;
   const index = Math.round(productGallery.scrollLeft / width);
 
@@ -182,6 +178,7 @@ function handleGalleryScroll() {
 
 function renderGallery(product) {
   const images = getResponsiveImages(product);
+
   currentGalleryImages = images;
   currentGalleryIndex = 0;
 
@@ -199,7 +196,7 @@ function renderGallery(product) {
         <div class="product-gallery__item">
           <img
             src="${escapeHtml(url)}"
-            alt="${escapeHtml(product.libelle || `Photo ${index + 1}`)}"
+            alt="${escapeHtml(product?.libelle || `Photo ${index + 1}`)}"
             loading="${index === 0 ? "eager" : "lazy"}"
           />
         </div>
@@ -214,12 +211,15 @@ function renderGallery(product) {
 
 function clearProductCard() {
   window.__currentProductData__ = null;
+
   productGallery.innerHTML = "";
   productGalleryDots.innerHTML = "";
   currentGalleryImages = [];
   currentGalleryIndex = 0;
+
   galleryPrev.classList.add("hidden");
   galleryNext.classList.add("hidden");
+
   productCard.classList.add("hidden");
   productTitle.textContent = "";
   productRef.textContent = "";
@@ -242,13 +242,15 @@ function clearProductCard() {
 }
 
 function renderProduct(product) {
-    window.__currentProductData__ = product;
+  window.__currentProductData__ = product;
+
   if (!product) {
     clearProductCard();
     return;
   }
 
   renderGallery(product);
+
   productTitle.textContent = product.libelle || "";
   productRef.textContent = product.codeArticle ? `Réf. ${product.codeArticle}` : "";
 
@@ -403,6 +405,17 @@ productCodeInput.addEventListener("keydown", (event) => {
     runSearch();
   }
 });
+
+galleryPrev.addEventListener("click", () => {
+  scrollToGalleryIndex(currentGalleryIndex - 1);
+});
+
+galleryNext.addEventListener("click", () => {
+  scrollToGalleryIndex(currentGalleryIndex + 1);
+});
+
+productGallery.addEventListener("scroll", handleGalleryScroll, { passive: true });
+
 window.addEventListener("resize", () => {
   const currentProduct = window.__currentProductData__;
   if (currentProduct) {

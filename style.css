@@ -109,14 +109,10 @@ button:hover {
   align-items: start;
 }
 
-.product-visual img {
-  width: 180px;
-  height: 180px;
-  object-fit: contain;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: #fff;
-  display: block;
+.product-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .product-title {
@@ -369,88 +365,8 @@ th {
   border-color: rgba(185, 28, 28, 0.18);
 }
 
-@media (max-width: 900px) {
-  .container {
-    padding: 12px;
-  }
-
-  .product-layout {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-
-  .product-visual {
-    display: flex;
-    justify-content: center;
-  }
-
-  .product-visual img {
-    width: 100%;
-    max-width: 240px;
-    height: auto;
-  }
-
-  .product-title {
-    font-size: 20px;
-  }
-
-  .product-ref {
-    margin-bottom: 14px;
-    font-size: 15px;
-  }
-
-  .price-hero {
-    gap: 14px;
-    flex-direction: column;
-  }
-
-  .price-integer {
-    font-size: 58px;
-  }
-
-  .price-currency {
-    font-size: 24px;
-  }
-
-  .price-decimal {
-    font-size: 22px;
-  }
-
-  .old-price-integer {
-    font-size: 42px;
-  }
-
-  .old-price-currency,
-  .old-price-decimal {
-    font-size: 18px;
-  }
-
-  .promo-badge {
-    font-size: 15px;
-    padding: 7px 12px;
-  }
-
-  .promo-discount {
-    font-size: 14px;
-  }
-
-  .eco-tax {
-    font-size: 14px;
-  }
-
-  th,
-  td {
-    padding: 10px 8px;
-    font-size: 14px;
-  }
-
-  .status-dispo,
-  .status-limite,
-  .status-indispo,
-  .mini-status {
-    min-width: auto;
-  }
-  .product-gallery-shell {
+/* Galerie */
+.product-gallery-shell {
   position: relative;
   width: 100%;
   max-width: 340px;
@@ -549,6 +465,80 @@ th {
 }
 
 @media (max-width: 900px) {
+  .container {
+    padding: 12px;
+  }
+
+  .product-layout {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .product-visual {
+    justify-content: center;
+  }
+
+  .product-title {
+    font-size: 20px;
+  }
+
+  .product-ref {
+    margin-bottom: 14px;
+    font-size: 15px;
+  }
+
+  .price-hero {
+    gap: 14px;
+    flex-direction: column;
+  }
+
+  .price-integer {
+    font-size: 58px;
+  }
+
+  .price-currency {
+    font-size: 24px;
+  }
+
+  .price-decimal {
+    font-size: 22px;
+  }
+
+  .old-price-integer {
+    font-size: 42px;
+  }
+
+  .old-price-currency,
+  .old-price-decimal {
+    font-size: 18px;
+  }
+
+  .promo-badge {
+    font-size: 15px;
+    padding: 7px 12px;
+  }
+
+  .promo-discount {
+    font-size: 14px;
+  }
+
+  .eco-tax {
+    font-size: 14px;
+  }
+
+  th,
+  td {
+    padding: 10px 8px;
+    font-size: 14px;
+  }
+
+  .status-dispo,
+  .status-limite,
+  .status-indispo,
+  .mini-status {
+    min-width: auto;
+  }
+
   .product-gallery-shell {
     max-width: 260px;
   }
@@ -562,5 +552,4 @@ th {
     height: 34px;
     font-size: 22px;
   }
-}
 }
