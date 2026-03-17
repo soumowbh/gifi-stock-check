@@ -7,6 +7,11 @@ const statusText = document.getElementById("statusText");
 
 const productCard = document.getElementById("productCard");
 const productGallery = document.getElementById("productGallery");
+const productGalleryDots = document.getElementById("productGalleryDots");
+const galleryPrev = document.getElementById("galleryPrev");
+const galleryNext = document.getElementById("galleryNext");
+let currentGalleryImages = [];
+let currentGalleryIndex = 0;
 const productTitle = document.getElementById("productTitle");
 const productRef = document.getElementById("productRef");
 
@@ -92,12 +97,99 @@ function getResponsiveImages(product) {
 
   return largeImages.length ? largeImages : (tabletImages.length ? tabletImages : mobileImages);
 }
+function getResponsiveImages(product) {
+  const mobileImages = product?.images?.pdp_mobile || [];
+  const tabletImages = product?.images?.pdp_tablet || [];
+  const largeImages = product?.images?.pdp_large || [];
+
+  if (window.innerWidth <= 767) {
+    return mobileImages.length ? mobileImages : (tabletImages.length ? tabletImages : largeImages);
+  }
+
+  if (window.innerWidth <= 1024) {
+    return tabletImages.length ? tabletImages : (largeImages.length ? largeImages : mobileImages);
+  }
+
+  return largeImages.length ? largeImages : (tabletImages.length ? tabletImages : mobileImages);
+}
+
+function updateGalleryDots() {
+  if (!currentGalleryImages.length) {
+    productGalleryDots.innerHTML = "";
+    return;
+  }
+
+  productGalleryDots.innerHTML = currentGalleryImages
+    .map(
+      (_, index) => `
+        <button
+          type="button"
+          class="gallery-dot ${index === currentGalleryIndex ? "is-active" : ""}"
+          data-index="${index}"
+          aria-label="Aller à l'image ${index + 1}">
+        </button>
+      `
+    )
+    .join("");
+
+  productGalleryDots.querySelectorAll(".gallery-dot").forEach((dot) => {
+    dot.addEventListener("click", () => {
+      const index = Number(dot.dataset.index);
+      scrollToGalleryIndex(index);
+    });
+  });
+}
+
+function updateGalleryNav() {
+  const hasMultiple = currentGalleryImages.length > 1;
+
+  galleryPrev.classList.toggle("hidden", !hasMultiple);
+  galleryNext.classList.toggle("hidden", !hasMultiple);
+
+  if (!hasMultiple) return;
+
+  galleryPrev.disabled = currentGalleryIndex <= 0;
+  galleryNext.disabled = currentGalleryIndex >= currentGalleryImages.length - 1;
+}
+
+function scrollToGalleryIndex(index) {
+  if (!productGallery || !currentGalleryImages.length) return;
+
+  const safeIndex = Math.max(0, Math.min(index, currentGalleryImages.length - 1));
+  const width = productGallery.clientWidth;
+
+  currentGalleryIndex = safeIndex;
+  productGallery.scrollTo({
+    left: width * safeIndex,
+    behavior: "smooth",
+  });
+
+  updateGalleryDots();
+  updateGalleryNav();
+}
+
+function handleGalleryScroll() {
+  if (!productGallery) return;
+  const width = productGallery.clientWidth || 1;
+  const index = Math.round(productGallery.scrollLeft / width);
+
+  if (index !== currentGalleryIndex) {
+    currentGalleryIndex = index;
+    updateGalleryDots();
+    updateGalleryNav();
+  }
+}
 
 function renderGallery(product) {
   const images = getResponsiveImages(product);
+  currentGalleryImages = images;
+  currentGalleryIndex = 0;
 
   if (!images.length) {
     productGallery.innerHTML = "";
+    productGalleryDots.innerHTML = "";
+    galleryPrev.classList.add("hidden");
+    galleryNext.classList.add("hidden");
     return;
   }
 
@@ -116,12 +208,19 @@ function renderGallery(product) {
     .join("");
 
   productGallery.scrollLeft = 0;
+  updateGalleryDots();
+  updateGalleryNav();
 }
 
 function clearProductCard() {
   window.__currentProductData__ = null;
-  productCard.classList.add("hidden");
   productGallery.innerHTML = "";
+  productGalleryDots.innerHTML = "";
+  currentGalleryImages = [];
+  currentGalleryIndex = 0;
+  galleryPrev.classList.add("hidden");
+  galleryNext.classList.add("hidden");
+  productCard.classList.add("hidden");
   productTitle.textContent = "";
   productRef.textContent = "";
 
@@ -305,11 +404,8 @@ productCodeInput.addEventListener("keydown", (event) => {
   }
 });
 window.addEventListener("resize", () => {
-  if (!productCard.classList.contains("hidden") && productTitle.textContent) {
-    // on relance un rendu léger si un produit est déjà affiché
-    const currentProduct = window.__currentProductData__;
-    if (currentProduct) {
-      renderGallery(currentProduct);
-    }
+  const currentProduct = window.__currentProductData__;
+  if (currentProduct) {
+    renderGallery(currentProduct);
   }
 });
