@@ -108,13 +108,16 @@ function renderGallery(product) {
           <img
             src="${escapeHtml(url)}"
             alt="${escapeHtml(product.libelle || `Photo ${index + 1}`)}"
-            loading="lazy"
+            loading="${index === 0 ? "eager" : "lazy"}"
           />
         </div>
       `
     )
     .join("");
+
+  productGallery.scrollLeft = 0;
 }
+
 function clearProductCard() {
   window.__currentProductData__ = null;
   productCard.classList.add("hidden");
