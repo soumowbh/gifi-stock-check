@@ -130,15 +130,16 @@ button:hover {
 
 .price-hero {
   display: flex;
-  align-items: flex-start;
-  gap: 28px;
-  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 20px;
+  flex-wrap: nowrap;
 }
 
 .current-price-block {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  justify-content: flex-end;
+  gap: 6px;
 }
 
 .current-price {
@@ -182,14 +183,16 @@ button:hover {
 
 .promo-block {
   display: flex;
-  align-items: flex-start;
-  gap: 18px;
-  padding-top: 4px;
-  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 14px;
+  padding-top: 0;
+  flex-wrap: nowrap;
 }
 
 .old-price-wrap {
-  padding-top: 6px;
+  padding-top: 0;
+  display: flex;
+  align-items: flex-end;
 }
 
 .old-price-diagonal {
@@ -204,12 +207,12 @@ button:hover {
 .old-price-diagonal::after {
   content: "";
   position: absolute;
-  left: -4px;
-  right: -4px;
-  top: 56%;
+  left: -6px;
+  right: -6px;
+  top: 50%;
   height: 4px;
   background: #707070;
-  transform: rotate(-42deg);
+  transform: rotate(42deg);
   transform-origin: center;
 }
 
@@ -467,9 +470,11 @@ th {
   }
 
   .price-hero {
-    gap: 14px;
-    flex-direction: column;
-  }
+  gap: 12px;
+  flex-direction: row;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
 
   .price-integer {
     font-size: 58px;
