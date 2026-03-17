@@ -672,8 +672,11 @@ th {
   .mini-status {
     min-width: auto;
 <<<<<<< HEAD
+<<<<<<< HEAD
   }
 =======
+=======
+>>>>>>> parent of e3fbee9 (Fix product gallery)
   }.product-gallery {
   display: flex;
   overflow-x: auto;
@@ -709,5 +712,8 @@ th {
   background: #fff;
   display: block;
 }
+<<<<<<< HEAD
+>>>>>>> parent of e3fbee9 (Fix product gallery)
+=======
 >>>>>>> parent of e3fbee9 (Fix product gallery)
 }

@@ -9,6 +9,9 @@ const productCard = document.getElementById("productCard");
 <<<<<<< HEAD
 =======
 const productGallery = document.getElementById("productGallery");
+<<<<<<< HEAD
+>>>>>>> parent of e3fbee9 (Fix product gallery)
+=======
 >>>>>>> parent of e3fbee9 (Fix product gallery)
 const productTitle = document.getElementById("productTitle");
 const productRef = document.getElementById("productRef");
@@ -182,6 +185,7 @@ function updateGalleryThumbs() {
     .join("");
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   galleryThumbs.querySelectorAll(".gallery-thumb").forEach((thumb) => {
     thumb.addEventListener("click", () => {
       scrollToGalleryIndex(Number(thumb.dataset.index));
@@ -264,10 +268,14 @@ function handleGalleryScroll() {
 =======
   return largeImages.length ? largeImages : (tabletImages.length ? tabletImages : mobileImages);
 >>>>>>> parent of e3fbee9 (Fix product gallery)
+=======
+  return largeImages.length ? largeImages : (tabletImages.length ? tabletImages : mobileImages);
+>>>>>>> parent of e3fbee9 (Fix product gallery)
 }
 
 function renderGallery(product) {
   const images = getResponsiveImages(product);
+<<<<<<< HEAD
 <<<<<<< HEAD
 
   currentGalleryImages = images;
@@ -287,6 +295,11 @@ function renderGallery(product) {
     galleryPrev.classList.add("hidden");
     galleryNext.classList.add("hidden");
     productGalleryCounter.classList.add("hidden");
+=======
+
+  if (!images.length) {
+    productGallery.innerHTML = "";
+>>>>>>> parent of e3fbee9 (Fix product gallery)
 =======
 
   if (!images.length) {
@@ -312,6 +325,7 @@ function renderGallery(product) {
     .join("");
 
   productGallery.scrollLeft = 0;
+<<<<<<< HEAD
 <<<<<<< HEAD
   updateGalleryThumbs();
   updateGalleryDots();
@@ -359,6 +373,14 @@ function clearProductCard() {
   galleryNext.classList.add("hidden");
 
 =======
+  window.__currentProductData__ = null;
+  productCard.classList.add("hidden");
+  productGallery.innerHTML = "";
+>>>>>>> parent of e3fbee9 (Fix product gallery)
+=======
+}
+
+function clearProductCard() {
   window.__currentProductData__ = null;
   productCard.classList.add("hidden");
   productGallery.innerHTML = "";
@@ -568,15 +590,21 @@ productGallery.addEventListener("scroll", handleGalleryScroll, { passive: true }
 
 window.addEventListener("resize", () => {
 <<<<<<< HEAD
+<<<<<<< HEAD
   if (currentProductData) {
     renderGallery(currentProductData);
 =======
+=======
+>>>>>>> parent of e3fbee9 (Fix product gallery)
   if (!productCard.classList.contains("hidden") && productTitle.textContent) {
     // on relance un rendu léger si un produit est déjà affiché
     const currentProduct = window.__currentProductData__;
     if (currentProduct) {
       renderGallery(currentProduct);
     }
+<<<<<<< HEAD
+>>>>>>> parent of e3fbee9 (Fix product gallery)
+=======
 >>>>>>> parent of e3fbee9 (Fix product gallery)
   }
 });
