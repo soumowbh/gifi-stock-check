@@ -36,7 +36,7 @@ const galleryThumbs = document.getElementById("galleryThumbs");
 const galleryPrev = document.getElementById("galleryPrev");
 const galleryNext = document.getElementById("galleryNext");
 
-const API_BASE = "";
+const API_BASE = "https://gifi-stock-check.vercel.app";
 
 let currentGalleryImages = [];
 let currentGalleryIndex = 0;
