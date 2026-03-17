@@ -269,40 +269,19 @@ button:hover {
   border-radius: 999px;
 }
 
-.limonest-card {
+.limonest-inline {
   margin-top: 18px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 14px;
-  background: #f9fafb;
 }
 
-.limonest-card__title {
-  font-size: 15px;
+.limonest-inline__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 999px;
   font-weight: 800;
-  margin-bottom: 10px;
-}
-
-.limonest-card__content {
-  display: flex;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-
-.limonest-metric {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.limonest-metric__label {
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.limonest-metric__value {
-  font-size: 22px;
-  font-weight: 800;
+  font-size: 14px;
+  line-height: 1.2;
+  border: 1px solid transparent;
 }
 
 .table-wrap {

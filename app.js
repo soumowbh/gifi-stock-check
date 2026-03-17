@@ -26,15 +26,16 @@ const productOldPriceCurrency = document.getElementById("productOldPriceCurrency
 
 const productEcoTax = document.getElementById("productEcoTax");
 
-const limonestCard = document.getElementById("limonestCard");
-const limonestStock = document.getElementById("limonestStock");
-const limonestStatus = document.getElementById("limonestStatus");
-
 const API_BASE = "https://gifi-stock-check.vercel.app";
 
 let currentGalleryImages = [];
 let currentGalleryIndex = 0;
 
+function clearLimonestCard() {
+  limonestStatus.textContent = "";
+  limonestStatus.className = "limonest-inline__badge";
+  limonestCard.classList.add("hidden");
+}
 function getStatusClass(status) {
   if (status === "Disponible") return "status-dispo";
   if (status === "Stock limité") return "status-limite";
@@ -314,9 +315,25 @@ function renderLimonestSummary(rows) {
     return;
   }
 
-  limonestStock.textContent = `${limonest.stocks}`;
-  limonestStatus.textContent = limonest.status;
-  limonestStatus.className = `mini-status ${getStatusClass(limonest.status)}`;
+  const stock = Number(limonest.stocks ?? 0);
+  const status = String(limonest.status || "").toLowerCase();
+
+  let text = "";
+  let statusClass = "";
+
+  if (status.includes("disponible")) {
+    text = `Stock disponible ${stock} à Limonest`;
+    statusClass = "status-dispo";
+  } else if (status.includes("limité")) {
+    text = `Stock limité ${stock} à Limonest`;
+    statusClass = "status-limite";
+  } else {
+    text = `Stock indisponible ${stock} à Limonest`;
+    statusClass = "status-indispo";
+  }
+
+  limonestStatus.textContent = text;
+  limonestStatus.className = `limonest-inline__badge ${statusClass}`;
   limonestCard.classList.remove("hidden");
 }
 
