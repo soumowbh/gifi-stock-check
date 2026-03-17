@@ -57,12 +57,23 @@ function renderProduct(product) {
   productRef.textContent = product.codeArticle ? `Réf. ${product.codeArticle}` : "";
   productPrice.textContent = product.prix || "";
 
-  if (product?.vip?.enabled) {
-    productVipBadge.textContent = product.vip.label || "Offre VIP";
+  const showPromoRow = Boolean(
+    product?.vip?.enabled ||
+    product?.ancienPrix ||
+    product?.vip?.discountPercent
+  );
+
+  if (showPromoRow) {
+    productVipBadge.textContent = product?.vip?.enabled
+      ? (product.vip.label || "Offre VIP")
+      : "Promo";
+
     productDiscount.textContent = product?.vip?.discountPercent
       ? `-${product.vip.discountPercent}%`
       : "";
+
     productOldPrice.textContent = product.ancienPrix || "";
+
     productVipRow.classList.remove("hidden");
   } else {
     productVipBadge.textContent = "";
