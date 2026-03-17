@@ -315,17 +315,20 @@ function renderLimonestSummary(rows) {
   }
 
   const stock = Number(limonest.stocks ?? 0);
-  const status = String(limonest.status || "").toLowerCase();
+  const rawStatus = String(limonest.status || "").trim().toLowerCase();
 
   let text = "";
   let statusClass = "";
 
-  if (status.includes("disponible")) {
-    text = `Stock disponible ${stock} à Limonest`;
-    statusClass = "status-dispo";
-  } else if (status.includes("limité")) {
+  if (rawStatus.includes("indisponible") || stock <= 0) {
+    text = `Stock indisponible ${stock} à Limonest`;
+    statusClass = "status-indispo";
+  } else if (rawStatus.includes("limité")) {
     text = `Stock limité ${stock} à Limonest`;
     statusClass = "status-limite";
+  } else if (rawStatus.includes("disponible")) {
+    text = `Stock disponible ${stock} à Limonest`;
+    statusClass = "status-dispo";
   } else {
     text = `Stock indisponible ${stock} à Limonest`;
     statusClass = "status-indispo";
