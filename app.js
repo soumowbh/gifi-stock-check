@@ -25,6 +25,7 @@ const productOldPriceDecimal = document.getElementById("productOldPriceDecimal")
 const productOldPriceCurrency = document.getElementById("productOldPriceCurrency");
 
 const productEcoTax = document.getElementById("productEcoTax");
+const unitLabel = stock > 1 ? "unités" : "unité";
 
 const API_BASE = "https://gifi-stock-check.vercel.app";
 
@@ -321,17 +322,16 @@ function renderLimonestSummary(rows) {
   let statusClass = "";
 
   if (rawStatus.includes("indisponible") || stock <= 0) {
-    text = `Stock indisponible ${stock} à Limonest`;
+    text = "Indisponible à Limonest";
     statusClass = "status-indispo";
-  } else if (rawStatus.includes("limité")) {
-    text = `Stock limité ${stock} à Limonest`;
+  } 
+  else if (rawStatus.includes("limité")) {
+    text = `Stock limité à Limonest · ${stock} ${unitLabel}`;
     statusClass = "status-limite";
-  } else if (rawStatus.includes("disponible")) {
-    text = `Stock disponible ${stock} à Limonest`;
+  } 
+  else {
+    text = `Disponible à Limonest · ${stock} ${unitLabel}`;
     statusClass = "status-dispo";
-  } else {
-    text = `Stock indisponible ${stock} à Limonest`;
-    statusClass = "status-indispo";
   }
 
   limonestStatus.textContent = text;
