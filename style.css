@@ -674,6 +674,7 @@ th {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   }
 =======
 =======
@@ -681,34 +682,36 @@ th {
 =======
 >>>>>>> parent of e3fbee9 (Fix product gallery)
   }.product-gallery {
+=======
+  }
+  .product-gallery {
+>>>>>>> parent of c952bbe (Fix renderGallery)
   display: flex;
+  gap: 12px;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-  width: 100%;
-  border-radius: 12px;
-  scrollbar-width: none;
+  padding-bottom: 8px;
 }
 
 .product-gallery::-webkit-scrollbar {
-  display: none;
+  height: 8px;
+}
+
+.product-gallery::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 999px;
 }
 
 .product-gallery__item {
-  flex: 0 0 100%;
-  width: 100%;
+  flex: 0 0 auto;
   scroll-snap-align: start;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .product-gallery__item img {
-  width: 100%;
-  max-width: 420px;
-  height: auto;
-  aspect-ratio: 1 / 1;
+  width: 180px;
+  height: 180px;
   object-fit: contain;
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -717,9 +720,19 @@ th {
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> parent of e3fbee9 (Fix product gallery)
 =======
 >>>>>>> parent of e3fbee9 (Fix product gallery)
 =======
 >>>>>>> parent of e3fbee9 (Fix product gallery)
+=======
+
+@media (max-width: 900px) {
+  .product-gallery__item img {
+    width: 240px;
+    height: 240px;
+  }
+}
+>>>>>>> parent of c952bbe (Fix renderGallery)
 }

@@ -328,14 +328,20 @@ function renderGallery(product) {
         <div class="product-gallery__item">
           <img
             src="${escapeHtml(url)}"
+<<<<<<< HEAD
             alt="${escapeHtml(product?.libelle || "Produit")}"
             ${eager}
             decoding="async"
+=======
+            alt="${escapeHtml(product.libelle || `Photo ${index + 1}`)}"
+            loading="lazy"
+>>>>>>> parent of c952bbe (Fix renderGallery)
           />
         </div>
       `;
     })
     .join("");
+<<<<<<< HEAD
 
   productGallery.scrollLeft = 0;
 <<<<<<< HEAD
@@ -394,8 +400,9 @@ function clearProductCard() {
 =======
 =======
 >>>>>>> parent of e3fbee9 (Fix product gallery)
+=======
+>>>>>>> parent of c952bbe (Fix renderGallery)
 }
-
 function clearProductCard() {
   window.__currentProductData__ = null;
   productCard.classList.add("hidden");
