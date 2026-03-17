@@ -9,11 +9,19 @@ const productCard = document.getElementById("productCard");
 const productImage = document.getElementById("productImage");
 const productTitle = document.getElementById("productTitle");
 const productRef = document.getElementById("productRef");
-const productPrice = document.getElementById("productPrice");
-const productVipRow = document.getElementById("productVipRow");
-const productVipBadge = document.getElementById("productVipBadge");
+
+const productCurrentInteger = document.getElementById("productCurrentInteger");
+const productCurrentDecimal = document.getElementById("productCurrentDecimal");
+const productCurrentCurrency = document.getElementById("productCurrentCurrency");
+
+const productPromoRow = document.getElementById("productPromoRow");
+const productPromoBadge = document.getElementById("productPromoBadge");
 const productDiscount = document.getElementById("productDiscount");
-const productOldPrice = document.getElementById("productOldPrice");
+const productOldPriceInteger = document.getElementById("productOldPriceInteger");
+const productOldPriceDecimal = document.getElementById("productOldPriceDecimal");
+const productOldPriceCurrency = document.getElementById("productOldPriceCurrency");
+
+const productEcoTax = document.getElementById("productEcoTax");
 
 const API_BASE = "https://gifi-stock-check.vercel.app";
 
@@ -32,17 +40,53 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
+function parseFormattedPrice(price) {
+  const raw = String(price || "").trim();
+  if (!raw) {
+    return {
+      integer: "",
+      decimal: "",
+      currency: "€",
+    };
+  }
+
+  const cleaned = raw.replace(/\s/g, "").replace("€", "");
+  const [integerPart = "", decimalPart = ""] = cleaned.split(",");
+
+  return {
+    integer: integerPart,
+    decimal: decimalPart,
+    currency: "€",
+  };
+}
+
+function setPriceParts(targetInteger, targetDecimal, targetCurrency, formattedPrice) {
+  const parts = parseFormattedPrice(formattedPrice);
+  targetInteger.textContent = parts.integer;
+  targetDecimal.textContent = parts.decimal;
+  targetCurrency.textContent = parts.currency;
+}
+
 function clearProductCard() {
   productCard.classList.add("hidden");
   productImage.src = "";
   productImage.alt = "";
   productTitle.textContent = "";
   productRef.textContent = "";
-  productPrice.textContent = "";
-  productVipBadge.textContent = "";
+
+  productCurrentInteger.textContent = "";
+  productCurrentDecimal.textContent = "";
+  productCurrentCurrency.textContent = "€";
+
+  productPromoBadge.textContent = "";
   productDiscount.textContent = "";
-  productOldPrice.textContent = "";
-  productVipRow.classList.add("hidden");
+  productOldPriceInteger.textContent = "";
+  productOldPriceDecimal.textContent = "";
+  productOldPriceCurrency.textContent = "€";
+  productPromoRow.classList.add("hidden");
+
+  productEcoTax.textContent = "";
+  productEcoTax.classList.add("hidden");
 }
 
 function renderProduct(product) {
@@ -55,7 +99,13 @@ function renderProduct(product) {
   productImage.alt = product.libelle || product.codeArticle || "Produit";
   productTitle.textContent = product.libelle || "";
   productRef.textContent = product.codeArticle ? `Réf. ${product.codeArticle}` : "";
-  productPrice.textContent = product.prix || "";
+
+  setPriceParts(
+    productCurrentInteger,
+    productCurrentDecimal,
+    productCurrentCurrency,
+    product.prix || ""
+  );
 
   const showPromoRow = Boolean(
     product?.vip?.enabled ||
@@ -64,7 +114,7 @@ function renderProduct(product) {
   );
 
   if (showPromoRow) {
-    productVipBadge.textContent = product?.vip?.enabled
+    productPromoBadge.textContent = product?.vip?.enabled
       ? (product.vip.label || "Offre VIP")
       : "Promo";
 
@@ -72,14 +122,29 @@ function renderProduct(product) {
       ? `-${product.vip.discountPercent}%`
       : "";
 
-    productOldPrice.textContent = product.ancienPrix || "";
+    setPriceParts(
+      productOldPriceInteger,
+      productOldPriceDecimal,
+      productOldPriceCurrency,
+      product.ancienPrix || ""
+    );
 
-    productVipRow.classList.remove("hidden");
+    productPromoRow.classList.remove("hidden");
   } else {
-    productVipBadge.textContent = "";
+    productPromoBadge.textContent = "";
     productDiscount.textContent = "";
-    productOldPrice.textContent = "";
-    productVipRow.classList.add("hidden");
+    productOldPriceInteger.textContent = "";
+    productOldPriceDecimal.textContent = "";
+    productOldPriceCurrency.textContent = "€";
+    productPromoRow.classList.add("hidden");
+  }
+
+  if (product?.ecoTaxMessage) {
+    productEcoTax.textContent = product.ecoTaxMessage;
+    productEcoTax.classList.remove("hidden");
+  } else {
+    productEcoTax.textContent = "";
+    productEcoTax.classList.add("hidden");
   }
 
   productCard.classList.remove("hidden");

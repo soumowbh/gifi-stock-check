@@ -50,13 +50,34 @@
           <div id="productTitle" class="product-title"></div>
           <div id="productRef" class="product-ref"></div>
 
-          <div class="product-price-area">
-            <div id="productPrice" class="product-price"></div>
+          <div class="price-hero">
+            <div class="current-price-block">
+              <div class="current-price">
+                <span id="productCurrentInteger" class="price-integer"></span>
+                <span class="price-right">
+                  <span id="productCurrentCurrency" class="price-currency">€</span>
+                  <span id="productCurrentDecimal" class="price-decimal"></span>
+                </span>
+              </div>
 
-            <div id="productVipRow" class="product-vip-row hidden">
-              <span id="productVipBadge" class="vip-badge"></span>
-              <span id="productDiscount" class="vip-discount"></span>
-              <span id="productOldPrice" class="old-price-diagonal"></span>
+              <div id="productEcoTax" class="eco-tax hidden"></div>
+            </div>
+
+            <div id="productPromoRow" class="promo-block hidden">
+              <div class="old-price-wrap">
+                <div class="old-price-diagonal">
+                  <span id="productOldPriceInteger" class="old-price-integer"></span>
+                  <span class="old-price-right">
+                    <span id="productOldPriceCurrency" class="old-price-currency">€</span>
+                    <span id="productOldPriceDecimal" class="old-price-decimal"></span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="promo-badges">
+                <span id="productPromoBadge" class="promo-badge"></span>
+                <span id="productDiscount" class="promo-discount"></span>
+              </div>
             </div>
           </div>
         </div>

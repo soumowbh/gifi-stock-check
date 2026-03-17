@@ -76,6 +76,11 @@ function parsePriceToNumber(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function formatEuro(value) {
+  if (!Number.isFinite(value)) return "";
+  return `${value.toFixed(2).replace(".", ",")} €`;
+}
+
 async function fetchJson(url) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 12000);
@@ -125,9 +130,7 @@ async function fetchProductDetails(productCode) {
 
   const vipEnabled = Boolean(product?.vipTag?.name);
   const vipLabel = product?.vipTag?.name || "";
-  const vipPriceInfo = product?.vipTag?.priceInfo || "";
-
-  const vipPriceInfoValue = parsePriceToNumber(vipPriceInfo);
+  const vipPriceInfoValue = parsePriceToNumber(product?.vipTag?.priceInfo);
 
   let oldPriceFormatted = "";
   let oldPriceValue = null;
@@ -135,8 +138,8 @@ async function fetchProductDetails(productCode) {
   if (listFormatted && listValue && listValue > 0) {
     oldPriceFormatted = listFormatted;
     oldPriceValue = listValue;
-  } else if (vipEnabled && vipPriceInfoValue && vipPriceInfoValue > 0) {
-    oldPriceFormatted = `${vipPriceInfoValue.toFixed(2).replace(".", ",")} €`;
+  } else if (vipPriceInfoValue && vipPriceInfoValue > 0) {
+    oldPriceFormatted = formatEuro(vipPriceInfoValue);
     oldPriceValue = vipPriceInfoValue;
   }
 
@@ -151,6 +154,8 @@ async function fetchProductDetails(productCode) {
     discountPercent = Math.round(((oldPriceValue - salesValue) / oldPriceValue) * 100);
   }
 
+  const ecoTaxMessage = product?.pdpInfo?.pdpDisplayEcoTaxMsg || "";
+
   return {
     productId,
     codeArticle: String(productCode).replace(/\D/g, ""),
@@ -160,6 +165,7 @@ async function fetchProductDetails(productCode) {
     prixValeur: salesValue,
     ancienPrix: oldPriceFormatted,
     ancienPrixValeur: oldPriceValue,
+    ecoTaxMessage,
     disponibleWeb: Boolean(product?.available),
     vip: {
       enabled: vipEnabled,
