@@ -10,6 +10,9 @@ const productCard = document.getElementById("productCard");
 =======
 const productGallery = document.getElementById("productGallery");
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of e3fbee9 (Fix product gallery)
+=======
 >>>>>>> parent of e3fbee9 (Fix product gallery)
 =======
 >>>>>>> parent of e3fbee9 (Fix product gallery)
@@ -186,6 +189,7 @@ function updateGalleryThumbs() {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   galleryThumbs.querySelectorAll(".gallery-thumb").forEach((thumb) => {
     thumb.addEventListener("click", () => {
       scrollToGalleryIndex(Number(thumb.dataset.index));
@@ -271,10 +275,14 @@ function handleGalleryScroll() {
 =======
   return largeImages.length ? largeImages : (tabletImages.length ? tabletImages : mobileImages);
 >>>>>>> parent of e3fbee9 (Fix product gallery)
+=======
+  return largeImages.length ? largeImages : (tabletImages.length ? tabletImages : mobileImages);
+>>>>>>> parent of e3fbee9 (Fix product gallery)
 }
 
 function renderGallery(product) {
   const images = getResponsiveImages(product);
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 
@@ -305,6 +313,11 @@ function renderGallery(product) {
   if (!images.length) {
     productGallery.innerHTML = "";
 >>>>>>> parent of e3fbee9 (Fix product gallery)
+=======
+
+  if (!images.length) {
+    productGallery.innerHTML = "";
+>>>>>>> parent of e3fbee9 (Fix product gallery)
     return;
   }
 
@@ -325,6 +338,7 @@ function renderGallery(product) {
     .join("");
 
   productGallery.scrollLeft = 0;
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
   updateGalleryThumbs();
@@ -378,12 +392,17 @@ function clearProductCard() {
   productGallery.innerHTML = "";
 >>>>>>> parent of e3fbee9 (Fix product gallery)
 =======
+=======
+>>>>>>> parent of e3fbee9 (Fix product gallery)
 }
 
 function clearProductCard() {
   window.__currentProductData__ = null;
   productCard.classList.add("hidden");
   productGallery.innerHTML = "";
+<<<<<<< HEAD
+>>>>>>> parent of e3fbee9 (Fix product gallery)
+=======
 >>>>>>> parent of e3fbee9 (Fix product gallery)
   productTitle.textContent = "";
   productRef.textContent = "";
@@ -591,9 +610,12 @@ productGallery.addEventListener("scroll", handleGalleryScroll, { passive: true }
 window.addEventListener("resize", () => {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   if (currentProductData) {
     renderGallery(currentProductData);
 =======
+=======
+>>>>>>> parent of e3fbee9 (Fix product gallery)
 =======
 >>>>>>> parent of e3fbee9 (Fix product gallery)
   if (!productCard.classList.contains("hidden") && productTitle.textContent) {
@@ -603,6 +625,9 @@ window.addEventListener("resize", () => {
       renderGallery(currentProduct);
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of e3fbee9 (Fix product gallery)
+=======
 >>>>>>> parent of e3fbee9 (Fix product gallery)
 =======
 >>>>>>> parent of e3fbee9 (Fix product gallery)
