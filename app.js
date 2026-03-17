@@ -25,7 +25,6 @@ const productOldPriceDecimal = document.getElementById("productOldPriceDecimal")
 const productOldPriceCurrency = document.getElementById("productOldPriceCurrency");
 
 const productEcoTax = document.getElementById("productEcoTax");
-const unitLabel = stock > 1 ? "unités" : "unité";
 
 const API_BASE = "https://gifi-stock-check.vercel.app";
 
@@ -316,6 +315,7 @@ function renderLimonestSummary(rows) {
   }
 
   const stock = Number(limonest.stocks ?? 0);
+  const unitLabel = stock > 1 ? "unités" : "unité";
   const rawStatus = String(limonest.status || "").trim().toLowerCase();
 
   let text = "";
