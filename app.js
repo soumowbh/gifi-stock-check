@@ -257,6 +257,7 @@ searchBtn.addEventListener("click", runSearch);
 productCodeInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     event.preventDefault();
+    productCodeInput.blur();
     runSearch();
   }
 });
