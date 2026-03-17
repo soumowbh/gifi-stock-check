@@ -129,13 +129,13 @@ async function fetchProductDetails(productCode) {
   const listValue = parsePriceToNumber(product?.price?.list?.value);
 
   const rawVipName =
+    product?.pdpTags?.vipTag?.name ||
     product?.vipTag?.name ||
-    product?.viptag?.name ||
     "";
 
   const rawVipPriceInfo =
+    product?.pdpTags?.vipTag?.priceInfo ||
     product?.vipTag?.priceInfo ||
-    product?.viptag?.priceInfo ||
     "";
 
   const vipPriceInfoValue = parsePriceToNumber(rawVipPriceInfo);
@@ -162,21 +162,7 @@ async function fetchProductDetails(productCode) {
     discountPercent = Math.round(((oldPriceValue - salesValue) / oldPriceValue) * 100);
   }
 
-  const vipLabel = rawVipName || "";
-  const vipEnabled = Boolean(vipLabel);
-
   const ecoTaxMessage = product?.pdpInfo?.pdpDisplayEcoTaxMsg || "";
-
-  console.log("DEBUG VIP", JSON.stringify({
-    productId,
-    vipTag: product?.vipTag || null,
-    rawVipName,
-    rawVipPriceInfo,
-    listFormatted,
-    listValue,
-    salesFormatted,
-    salesValue
-  }, null, 2));
 
   return {
     productId,
@@ -190,8 +176,8 @@ async function fetchProductDetails(productCode) {
     ecoTaxMessage,
     disponibleWeb: Boolean(product?.available),
     vip: {
-      enabled: vipEnabled,
-      label: vipLabel,
+      enabled: Boolean(rawVipName),
+      label: rawVipName || "",
       discountPercent,
     },
   };
