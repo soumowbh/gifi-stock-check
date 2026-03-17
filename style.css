@@ -671,5 +671,43 @@ th {
   .status-indispo,
   .mini-status {
     min-width: auto;
+<<<<<<< HEAD
   }
+=======
+  }.product-gallery {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  border-radius: 12px;
+  scrollbar-width: none;
+}
+
+.product-gallery::-webkit-scrollbar {
+  display: none;
+}
+
+.product-gallery__item {
+  flex: 0 0 100%;
+  width: 100%;
+  scroll-snap-align: start;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.product-gallery__item img {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+  display: block;
+}
+>>>>>>> parent of e3fbee9 (Fix product gallery)
 }
