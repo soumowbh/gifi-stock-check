@@ -252,7 +252,10 @@ async function runSearch() {
   }
 }
 
-searchBtn.addEventListener("click", runSearch);
+searchBtn.addEventListener("click", () => {
+  productCodeInput.blur();
+  runSearch();
+});
 
 productCodeInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
