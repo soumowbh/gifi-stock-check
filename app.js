@@ -80,7 +80,6 @@ function setPriceParts(targetInteger, targetDecimal, targetCurrency, formattedPr
 }
 
 function clearLimonestCard() {
-  limonestStock.textContent = "";
   limonestStatus.textContent = "";
   limonestStatus.className = "mini-status";
   limonestCard.classList.add("hidden");
